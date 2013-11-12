@@ -98,7 +98,6 @@
     <ClInclude Include="..\snes_spc\blargg_endian.h" />
     <ClInclude Include="..\snes_spc\blargg_source.h" />
     <ClInclude Include="..\snes_spc\SNES_SPC.h" />
-    <ClInclude Include="..\snes_spc\SPC_CPU.h" />
     <ClInclude Include="..\snes_spc\SPC_DSP.h" />
     <ClInclude Include="..\snes_spc\SPC_Filter.h" />
   </ItemGroup>

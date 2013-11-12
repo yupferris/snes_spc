@@ -36,9 +36,6 @@
     <ClInclude Include="..\snes_spc\SNES_SPC.h">
       <Filter>snes_spc</Filter>
     </ClInclude>
-    <ClInclude Include="..\snes_spc\SPC_CPU.h">
-      <Filter>snes_spc</Filter>
-    </ClInclude>
     <ClInclude Include="..\snes_spc\SPC_DSP.h">
       <Filter>snes_spc</Filter>
     </ClInclude>
