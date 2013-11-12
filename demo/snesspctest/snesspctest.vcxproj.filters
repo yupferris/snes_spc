@@ -6,9 +6,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\snes_spc\dsp.cpp">
-      <Filter>snes_spc</Filter>
-    </ClCompile>
     <ClCompile Include="..\snes_spc\SNES_SPC.cpp">
       <Filter>snes_spc</Filter>
     </ClCompile>
@@ -34,9 +31,6 @@
       <Filter>snes_spc</Filter>
     </ClInclude>
     <ClInclude Include="..\snes_spc\blargg_source.h">
-      <Filter>snes_spc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\snes_spc\dsp.h">
       <Filter>snes_spc</Filter>
     </ClInclude>
     <ClInclude Include="..\snes_spc\SNES_SPC.h">

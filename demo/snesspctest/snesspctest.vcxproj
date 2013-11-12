@@ -82,7 +82,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\snes_spc\dsp.cpp" />
     <ClCompile Include="..\snes_spc\SNES_SPC.cpp">
       <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</PreprocessToFile>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -98,7 +97,6 @@
     <ClInclude Include="..\snes_spc\blargg_config.h" />
     <ClInclude Include="..\snes_spc\blargg_endian.h" />
     <ClInclude Include="..\snes_spc\blargg_source.h" />
-    <ClInclude Include="..\snes_spc\dsp.h" />
     <ClInclude Include="..\snes_spc\SNES_SPC.h" />
     <ClInclude Include="..\snes_spc\SPC_CPU.h" />
     <ClInclude Include="..\snes_spc\SPC_DSP.h" />
