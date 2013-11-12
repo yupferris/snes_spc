@@ -81,11 +81,6 @@ spc_err_t spc_skip( SNES_SPC*, int count );
 
 /**** State save/load (only available with accurate DSP) ****/
 
-/* Saves/loads exact emulator state */
-enum { spc_state_size = 67 * 1024L }; /* maximum space needed when saving */
-typedef void (*spc_copy_func_t)( unsigned char** io, void* state, size_t );
-void spc_copy_state( SNES_SPC*, unsigned char** io, spc_copy_func_t );
-
 /* Writes minimal SPC file header to spc_out */
 void spc_init_header( void* spc_out );
 

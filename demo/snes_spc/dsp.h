@@ -58,11 +58,6 @@ enum { spc_dsp_voice_count = 8 };
 enum { spc_dsp_register_count = 128 };
 void spc_dsp_load( SPC_DSP*, unsigned char const regs [spc_dsp_register_count] );
 
-/* Saves/loads exact emulator state (accurate DSP only) */
-enum { spc_dsp_state_size = 640 }; /* maximum space needed when saving */
-typedef void (*spc_dsp_copy_func_t)( unsigned char** io, void* state, size_t );
-void spc_dsp_copy_state( SPC_DSP*, unsigned char** io, spc_dsp_copy_func_t );
-
 /* Returns non-zero if new key-on events occurred since last call (accurate DSP only) */
 int spc_dsp_check_kon( SPC_DSP* );
 

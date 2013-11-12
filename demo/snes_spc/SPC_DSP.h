@@ -53,11 +53,6 @@ public:
 	enum { register_count = 128 };
 	void load( uint8_t const regs [register_count] );
 
-	// Saves/loads exact emulator state
-	enum { state_size = 640 }; // maximum space needed when saving
-	typedef dsp_copy_func_t copy_func_t;
-	void copy_state( unsigned char** io, copy_func_t );
-
 	// Returns non-zero if new key-on events occurred since last call
 	bool check_kon();
 	
@@ -271,26 +266,5 @@ inline bool SPC_DSP::check_kon()
 	m.kon_check = 0;
 	return old;
 }
-
-#if !SPC_NO_COPY_STATE_FUNCS
-
-class SPC_State_Copier {
-	SPC_DSP::copy_func_t func;
-	unsigned char** buf;
-public:
-	SPC_State_Copier( unsigned char** p, SPC_DSP::copy_func_t f ) { func = f; buf = p; }
-	void copy( void* state, size_t size );
-	int copy_int( int state, int size );
-	void skip( int count );
-	void extra();
-};
-
-#define SPC_COPY( type, state )\
-{\
-	state = (BOOST::type) copier.copy_int( state, sizeof (BOOST::type) );\
-	assert( (BOOST::type) state == state );\
-}
-
-#endif
 
 #endif
