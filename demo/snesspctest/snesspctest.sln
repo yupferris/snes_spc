@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snesspctest", "snesspctest.vcxproj", "{C68BC332-BFD6-49E7-99D3-3AC731F4F035}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AA7453BC-19EF-4F43-B4F6-6C4D65D364B0} = {AA7453BC-19EF-4F43-B4F6-6C4D65D364B0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SnesApu", "..\..\..\SamuraiPizzaCats\SnesApu\SnesApu.vcxproj", "{AA7453BC-19EF-4F43-B4F6-6C4D65D364B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C68BC332-BFD6-49E7-99D3-3AC731F4F035}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C68BC332-BFD6-49E7-99D3-3AC731F4F035}.Debug|Win32.Build.0 = Debug|Win32
+		{C68BC332-BFD6-49E7-99D3-3AC731F4F035}.Release|Win32.ActiveCfg = Release|Win32
+		{C68BC332-BFD6-49E7-99D3-3AC731F4F035}.Release|Win32.Build.0 = Release|Win32
+		{AA7453BC-19EF-4F43-B4F6-6C4D65D364B0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AA7453BC-19EF-4F43-B4F6-6C4D65D364B0}.Debug|Win32.Build.0 = Debug|Win32
+		{AA7453BC-19EF-4F43-B4F6-6C4D65D364B0}.Release|Win32.ActiveCfg = Release|Win32
+		{AA7453BC-19EF-4F43-B4F6-6C4D65D364B0}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

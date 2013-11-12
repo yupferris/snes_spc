@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="snes_spc">
+      <UniqueIdentifier>{c227f3cc-d6cd-4492-8df7-6a1cc79fd50c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\snes_spc\dsp.cpp">
+      <Filter>snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SNES_SPC.cpp">
+      <Filter>snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SNES_SPC_misc.cpp">
+      <Filter>snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SNES_SPC_state.cpp">
+      <Filter>snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\spc.cpp">
+      <Filter>snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SPC_DSP.cpp">
+      <Filter>snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\snes_spc\SPC_Filter.cpp">
+      <Filter>snes_spc</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\snes_spc\blargg_common.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\blargg_config.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\blargg_endian.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\blargg_source.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\dsp.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SNES_SPC.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\spc.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SPC_CPU.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SPC_DSP.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SPC_Filter.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
