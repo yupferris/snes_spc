@@ -51,13 +51,6 @@ public:
 
 	// Runs SPC to end_time and starts a new time frame at 0
 	void end_frame( time_t end_time );
-	
-// Sound control
-	
-	// Mutes voices corresponding to non-zero bits in mask (issues repeated KOFF events).
-	// Reduces emulation accuracy.
-	enum { voice_count = 8 };
-	void mute_voices( int mask );
 
 // SPC music files
 
@@ -233,7 +226,5 @@ inline void SNES_SPC::write_port( time_t t, int port, int data )
 	assert( (unsigned) port < port_count );
 	run_until_( t ) [0x10 + port] = data;
 }
-
-inline void SNES_SPC::mute_voices( int mask ) { dsp.mute_voices( mask ); }
 
 #endif

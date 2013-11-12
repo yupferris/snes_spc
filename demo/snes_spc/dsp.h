@@ -49,12 +49,8 @@ void spc_dsp_write( SPC_DSP*, int addr, int data );
 /* a pair of samples is be generated. */
 void spc_dsp_run( SPC_DSP*, int clock_count );
 
-
 /**** Sound control *****/
-
-/* Mutes voices corresponding to non-zero bits in mask. Reduces emulation accuracy. */
 enum { spc_dsp_voice_count = 8 };
-void spc_dsp_mute_voices( SPC_DSP*, int mask );
 
 /**** State save/load *****/
 

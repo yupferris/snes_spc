@@ -26,7 +26,6 @@ SNES_SPC* spc_new( void )
 	assert( spc_clock_rate          == (int) SNES_SPC::clock_rate );
 	assert( spc_clocks_per_sample   == (int) SNES_SPC::clocks_per_sample );
 	assert( spc_port_count          == (int) SNES_SPC::port_count );
-	assert( spc_voice_count         == (int) SNES_SPC::voice_count );
 	assert( spc_file_size           == (int) SNES_SPC::spc_file_size );
 	
 	SNES_SPC* s = new SNES_SPC;
@@ -47,7 +46,6 @@ void spc_soft_reset      ( SNES_SPC* s )                                { s->sof
 int  spc_read_port       ( SNES_SPC* s, spc_time_t t, int p )           { return s->read_port( t, p ); }
 void spc_write_port      ( SNES_SPC* s, spc_time_t t, int p, int d )    { s->write_port( t, p, d ); }
 void spc_end_frame       ( SNES_SPC* s, spc_time_t t )                  { s->end_frame( t ); }  
-void spc_mute_voices     ( SNES_SPC* s, int mask )                      { s->mute_voices( mask ); }
 spc_err_t spc_load_spc   ( SNES_SPC* s, void const* p, long n )         { return s->load_spc( p, n ); }
 void spc_clear_echo      ( SNES_SPC* s )                                { s->clear_echo(); }
 spc_err_t spc_play       ( SNES_SPC* s, int count, short* out )         { return s->play( count, out ); }

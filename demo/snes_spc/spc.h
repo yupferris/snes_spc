@@ -60,12 +60,8 @@ void spc_write_port( SNES_SPC*, spc_time_t, int port, int data );
 /* Runs SPC to end_time and starts a new time frame at 0 */
 void spc_end_frame( SNES_SPC*, spc_time_t end_time );
 
-
 /**** Sound control ****/
-
-/*Mutes voices corresponding to non-zero bits in mask. Reduces emulation accuracy. */
 enum { spc_voice_count = 8 };
-void spc_mute_voices( SNES_SPC*, int mask );
 
 /**** SPC music playback *****/
 
