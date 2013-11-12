@@ -15,7 +15,7 @@ public:
 // Setup
 
 	// Initializes DSP and has it use the 64K RAM provided
-	void init( void* ram_64k );
+	SPC_DSP( uint8_t *ram_64k );
 
 	// Sets destination for output samples. If out is NULL or out_size is 0,
 	// doesn't generate any.

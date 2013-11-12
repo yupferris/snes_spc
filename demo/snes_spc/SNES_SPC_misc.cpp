@@ -31,13 +31,8 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 SNES_SPC::SNES_SPC()
 {
-	init();
-}
-
-blargg_err_t SNES_SPC::init()
-{
 	memset( &m, 0, sizeof m );
-	dsp.init( RAM );
+	dsp = new SPC_DSP( RAM );
 	
 	// Most SPC music doesn't need ROM, and almost all the rest only rely
 	// on these two bytes
@@ -73,7 +68,11 @@ blargg_err_t SNES_SPC::init()
 	}
 	
 	reset();
-	return 0;
+}
+
+SNES_SPC::~SNES_SPC()
+{
+	delete dsp;
 }
 
 void SNES_SPC::init_rom( uint8_t const in [rom_size] )
@@ -128,13 +127,6 @@ void SNES_SPC::ram_loaded()
 	memset( m.ram.padding2, cpu_pad_fill, sizeof m.ram.padding2 );
 }
 
-// Registers were just loaded. Applies these new values.
-void SNES_SPC::regs_loaded()
-{
-	enable_rom( REGS [r_control] & 0x80 );
-	timers_loaded();
-}
-
 void SNES_SPC::reset_time_regs()
 {
 	m.cpu_error     = 0;
@@ -149,7 +141,8 @@ void SNES_SPC::reset_time_regs()
 		t->divider   = 0;
 	}
 	
-	regs_loaded();
+	enable_rom( REGS [r_control] & 0x80 );
+	timers_loaded();
 	
 	m.extra_clocks = 0;
 	reset_buf();
@@ -176,7 +169,7 @@ void SNES_SPC::reset_common( int timer_counter_init )
 void SNES_SPC::soft_reset()
 {
 	reset_common( 0 );
-	dsp.soft_reset();
+	dsp->soft_reset();
 }
 
 void SNES_SPC::reset()
@@ -184,7 +177,7 @@ void SNES_SPC::reset()
 	memset( RAM, 0xFF, 0x10000 );
 	ram_loaded();
 	reset_common( 0x0F );
-	dsp.reset();
+	dsp->reset();
 }
 
 char const SNES_SPC::signature [signature_size + 1] =
@@ -217,7 +210,7 @@ blargg_err_t SNES_SPC::load_spc( void const* data, long size )
 	ram_loaded();
 	
 	// DSP registers
-	dsp.load( spc->dsp );
+	dsp->load( spc->dsp );
 	
 	reset_time_regs();
 	
@@ -226,10 +219,10 @@ blargg_err_t SNES_SPC::load_spc( void const* data, long size )
 
 void SNES_SPC::clear_echo()
 {
-	if ( !(dsp.read( SPC_DSP::r_flg ) & 0x20) )
+	if ( !(dsp->read( SPC_DSP::r_flg ) & 0x20) )
 	{
-		int addr = 0x100 * dsp.read( SPC_DSP::r_esa );
-		int end  = addr + 0x800 * (dsp.read( SPC_DSP::r_edl ) & 0x0F);
+		int addr = 0x100 * dsp->read( SPC_DSP::r_esa );
+		int end  = addr + 0x800 * (dsp->read( SPC_DSP::r_edl ) & 0x0F);
 		if ( end > 0x10000 )
 			end = 0x10000;
 		memset( &RAM [addr], 0xFF, end - addr );
@@ -249,7 +242,7 @@ void SNES_SPC::reset_buf()
 	m.extra_pos = out;
 	m.buf_begin = 0;
 	
-	dsp.set_output( 0, 0 );
+	dsp->set_output( 0, 0 );
 }
 
 void SNES_SPC::set_output( sample_t* out, int size )
@@ -272,8 +265,8 @@ void SNES_SPC::set_output( sample_t* out, int size )
 		if ( out >= out_end )
 		{
 			// Have DSP write to remaining extra space
-			out     = dsp.extra();
-			out_end = &dsp.extra() [extra_size];
+			out     = dsp->extra();
+			out_end = &dsp->extra() [extra_size];
 			
 			// Copy any remaining extra samples as if DSP wrote them
 			while ( in < m.extra_pos )
@@ -281,7 +274,7 @@ void SNES_SPC::set_output( sample_t* out, int size )
 			assert( out <= out_end );
 		}
 		
-		dsp.set_output( out, out_end - out );
+		dsp->set_output( out, out_end - out );
 	}
 	else
 	{
@@ -293,11 +286,11 @@ void SNES_SPC::save_extra()
 {
 	// Get end pointers
 	sample_t const* main_end = m.buf_end;     // end of data written to buf
-	sample_t const* dsp_end  = dsp.out_pos(); // end of data written to dsp.extra()
+	sample_t const* dsp_end  = dsp->out_pos(); // end of data written to dsp.extra()
 	if ( m.buf_begin <= dsp_end && dsp_end <= main_end )
 	{
 		main_end = dsp_end;
-		dsp_end  = dsp.extra(); // nothing in DSP's extra
+		dsp_end  = dsp->extra(); // nothing in DSP's extra
 	}
 	
 	// Copy any extra samples at these ends into extra_buf
@@ -305,7 +298,7 @@ void SNES_SPC::save_extra()
 	sample_t const* in;
 	for ( in = m.buf_begin + sample_count(); in < main_end; in++ )
 		*out++ = *in;
-	for ( in = dsp.extra(); in < dsp_end ; in++ )
+	for ( in = dsp->extra(); in < dsp_end ; in++ )
 		*out++ = *in;
 	
 	m.extra_pos = out;

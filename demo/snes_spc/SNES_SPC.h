@@ -12,9 +12,7 @@ public:
 	typedef BOOST::uint8_t uint8_t;
 	
 	SNES_SPC();
-
-	// Must be called once before using
-	blargg_err_t init();
+	~SNES_SPC();
 	
 	// Sample pairs generated per second
 	enum { sample_rate = 32000 };
@@ -97,7 +95,7 @@ public:
 	enum { signature_size = 35 };
 	
 private:
-	SPC_DSP dsp;
+	SPC_DSP *dsp;
 
 	struct state_t
 	{
@@ -171,7 +169,6 @@ private:
 	void save_extra();
 	void load_regs( uint8_t const in [reg_count] );
 	void ram_loaded();
-	void regs_loaded();
 	void reset_time_regs();
 	void reset_common( int timer_counter_init );
 	
