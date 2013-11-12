@@ -34,8 +34,6 @@ blargg_err_t SNES_SPC::init()
 	memset( &m, 0, sizeof m );
 	dsp.init( RAM );
 	
-	m.tempo = tempo_unit;
-	
 	// Most SPC music doesn't need ROM, and almost all the rest only rely
 	// on these two bytes
 	m.rom [0x3E] = 0xFF;
@@ -78,29 +76,6 @@ void SNES_SPC::init_rom( uint8_t const in [rom_size] )
 	memcpy( m.rom, in, sizeof m.rom );
 }
 
-void SNES_SPC::set_tempo( int t )
-{
-	m.tempo = t;
-	int const timer2_shift = 4; // 64 kHz
-	int const other_shift  = 3; //  8 kHz
-	
-	#if SPC_DISABLE_TEMPO
-		m.timers [2].prescaler = timer2_shift;
-		m.timers [1].prescaler = timer2_shift + other_shift;
-		m.timers [0].prescaler = timer2_shift + other_shift;
-	#else
-		if ( !t )
-			t = 1;
-		int const timer2_rate  = 1 << timer2_shift;
-		int rate = (timer2_rate * tempo_unit + (t >> 1)) / t;
-		if ( rate < timer2_rate / 4 )
-			rate = timer2_rate / 4; // max 4x tempo
-		m.timers [2].prescaler = rate;
-		m.timers [1].prescaler = rate << other_shift;
-		m.timers [0].prescaler = rate << other_shift;
-	#endif
-}
-
 // Timer registers have been loaded. Applies these to the timers. Does not
 // reset timer prescalers or dividers.
 void SNES_SPC::timers_loaded()
@@ -114,7 +89,12 @@ void SNES_SPC::timers_loaded()
 		t->counter = REGS_IN [r_t0out + i] & 0x0F;
 	}
 	
-	set_tempo( m.tempo );
+	int const timer2_shift = 4; // 64 kHz
+	int const other_shift  = 3; //  8 kHz
+	
+	m.timers [2].prescaler = timer2_shift;
+	m.timers [1].prescaler = timer2_shift + other_shift;
+	m.timers [0].prescaler = timer2_shift + other_shift;
 }
 
 // Loads registers from unified 16-byte format

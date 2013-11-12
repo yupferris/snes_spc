@@ -62,10 +62,6 @@ public:
 	// If true, prevents channels and global volumes from being phase-negated.
 	// Only supported by fast DSP.
 	void disable_surround( bool disable = true );
-	
-	// Sets tempo, where tempo_unit = normal, tempo_unit / 2 = half speed, etc.
-	enum { tempo_unit = 0x100 };
-	void set_tempo( int );
 
 // SPC music files
 
@@ -132,7 +128,6 @@ private:
 		time_t      spc_time;
 		bool        echo_accessed;
 		
-		int         tempo;
 		int         skipped_kon;
 		int         skipped_koff;
 		const char* cpu_error;

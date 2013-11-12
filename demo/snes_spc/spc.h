@@ -71,11 +71,6 @@ void spc_mute_voices( SNES_SPC*, int mask );
 Only supported by fast DSP; has no effect on accurate DSP. */
 void spc_disable_surround( SNES_SPC*, int disable );
 
-/* Sets tempo, where spc_tempo_unit = normal, spc_tempo_unit / 2 = half speed, etc. */
-enum { spc_tempo_unit = 0x100 };
-void spc_set_tempo( SNES_SPC*, int );
-
-
 /**** SPC music playback *****/
 
 /* Loads SPC data into emulator. Returns NULL on success, otherwise error string. */
