@@ -15,9 +15,6 @@
     <ClCompile Include="..\snes_spc\SNES_SPC_misc.cpp">
       <Filter>snes_spc</Filter>
     </ClCompile>
-    <ClCompile Include="..\snes_spc\spc.cpp">
-      <Filter>snes_spc</Filter>
-    </ClCompile>
     <ClCompile Include="..\snes_spc\SPC_DSP.cpp">
       <Filter>snes_spc</Filter>
     </ClCompile>
@@ -43,9 +40,6 @@
       <Filter>snes_spc</Filter>
     </ClInclude>
     <ClInclude Include="..\snes_spc\SNES_SPC.h">
-      <Filter>snes_spc</Filter>
-    </ClInclude>
-    <ClInclude Include="..\snes_spc\spc.h">
       <Filter>snes_spc</Filter>
     </ClInclude>
     <ClInclude Include="..\snes_spc\SPC_CPU.h">

@@ -7,10 +7,12 @@
 #include "SPC_DSP.h"
 #include "blargg_endian.h"
 
-struct SNES_SPC {
+class SNES_SPC {
 public:
 	typedef BOOST::uint8_t uint8_t;
 	
+	SNES_SPC();
+
 	// Must be called once before using
 	blargg_err_t init();
 	

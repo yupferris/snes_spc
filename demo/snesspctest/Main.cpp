@@ -4,7 +4,8 @@ using namespace Fsl;
 #include <Fel.h>
 using namespace Fel;
 
-#include "../snes_spc/spc.h"
+#include "../snes_spc/SNES_SPC.h"
+#include "../snes_spc/SPC_Filter.h"
 
 #include <Windows.h>
 
@@ -44,8 +45,8 @@ private:
 	{
 		mutex->Lock();
 		
-		spc_play(apu, numSamples * 2, stereoBuffer);
-		spc_filter_run(filter, stereoBuffer, numSamples * 2);
+		apu->play(numSamples * 2, stereoBuffer);
+		filter->run(stereoBuffer, numSamples * 2);
 
 		for (int i = 0; i < numSamples; i++)
 		{
@@ -72,16 +73,16 @@ int Main(const List<String>& arguments)
 		if (!arguments.Count())
 			throw FSL_EXCEPTION("No input file specified");
 
-		auto apu = spc_new();
-		auto filter = spc_filter_new();
+		auto apu = new SNES_SPC();
+		auto filter = new SPC_Filter();
 
 		auto spc = File::ReadAllBytes(arguments[0]);
-		spc_load_spc(apu, spc.GetData(), spc.Count());
-		spc_clear_echo(apu);
-		spc_filter_clear(filter);
+		apu->load_spc(spc.GetData(), spc.Count());
+		apu->clear_echo();
+		filter->clear();
 
 		auto driver = AudioDriverFactory::CreateDefault();
-		driver->SetSampleRate(spc_sample_rate);
+		driver->SetSampleRate(SNES_SPC::sample_rate);
 
 		auto device = new OutputDevice(apu, filter, driver);
 
@@ -92,8 +93,8 @@ int Main(const List<String>& arguments)
 
 		delete driver;
 
-		spc_filter_delete(filter);
-		spc_delete(apu);
+		delete filter;
+		delete apu;
 	}
 	catch (const Exception& e)
 	{

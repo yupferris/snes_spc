@@ -89,7 +89,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\snes_spc\SNES_SPC_misc.cpp" />
-    <ClCompile Include="..\snes_spc\spc.cpp" />
     <ClCompile Include="..\snes_spc\SPC_DSP.cpp" />
     <ClCompile Include="..\snes_spc\SPC_Filter.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -101,7 +100,6 @@
     <ClInclude Include="..\snes_spc\blargg_source.h" />
     <ClInclude Include="..\snes_spc\dsp.h" />
     <ClInclude Include="..\snes_spc\SNES_SPC.h" />
-    <ClInclude Include="..\snes_spc\spc.h" />
     <ClInclude Include="..\snes_spc\SPC_CPU.h" />
     <ClInclude Include="..\snes_spc\SPC_DSP.h" />
     <ClInclude Include="..\snes_spc\SPC_Filter.h" />

@@ -29,6 +29,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 //// Init
 
+SNES_SPC::SNES_SPC()
+{
+	init();
+}
+
 blargg_err_t SNES_SPC::init()
 {
 	memset( &m, 0, sizeof m );
