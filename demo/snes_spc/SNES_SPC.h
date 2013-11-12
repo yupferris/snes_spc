@@ -199,8 +199,6 @@ private:
 	};
 
 	static char const signature [signature_size + 1];
-	
-	void save_regs( uint8_t out [reg_count] );
 };
 
 #include <assert.h>
