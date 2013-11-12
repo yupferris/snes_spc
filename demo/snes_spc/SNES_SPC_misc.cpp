@@ -19,7 +19,6 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include "blargg_source.h"
 
-#define RAM         (ram)
 #define REGS        (smp_regs [0])
 #define REGS_IN     (smp_regs [1])
 
@@ -31,8 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 SNES_SPC::SNES_SPC()
 {
-	memset( ram, 0, sizeof(ram) );
-	dsp = new SPC_DSP( RAM );
+	dsp = new SPC_DSP( ram );
 	
 	// Most SPC music doesn't need ROM, and almost all the rest only rely
 	// on these two bytes
@@ -120,7 +118,7 @@ void SNES_SPC::load_regs( uint8_t const in [reg_count] )
 void SNES_SPC::ram_loaded()
 {
 	rom_enabled = 0;
-	load_regs( &RAM [0xF0] );
+	load_regs( &ram [0xF0] );
 	
 	// Put STOP instruction around memory to catch PC underflow/overflow
 	memset( padding1, cpu_pad_fill, sizeof padding1 );
@@ -174,7 +172,7 @@ void SNES_SPC::soft_reset()
 
 void SNES_SPC::reset()
 {
-	memset( RAM, 0xFF, 0x10000 );
+	memset( ram, 0xFF, 0x10000 );
 	ram_loaded();
 	reset_common( 0x0F );
 	dsp->reset();
@@ -206,7 +204,7 @@ blargg_err_t SNES_SPC::load_spc( void const* data, long size )
 	cpu_regs.sp  = spc->sp;
 	
 	// RAM and registers
-	memcpy( RAM, spc->ram, 0x10000 );
+	memcpy( ram, spc->ram, 0x10000 );
 	ram_loaded();
 	
 	// DSP registers
@@ -225,7 +223,7 @@ void SNES_SPC::clear_echo()
 		int end  = addr + 0x800 * (dsp->read( SPC_DSP::r_edl ) & 0x0F);
 		if ( end > 0x10000 )
 			end = 0x10000;
-		memset( &RAM [addr], 0xFF, end - addr );
+		memset( &ram [addr], 0xFF, end - addr );
 	}
 }
 
