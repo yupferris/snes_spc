@@ -15,9 +15,6 @@
     <ClCompile Include="..\snes_spc\SNES_SPC_misc.cpp">
       <Filter>snes_spc</Filter>
     </ClCompile>
-    <ClCompile Include="..\snes_spc\SNES_SPC_state.cpp">
-      <Filter>snes_spc</Filter>
-    </ClCompile>
     <ClCompile Include="..\snes_spc\spc.cpp">
       <Filter>snes_spc</Filter>
     </ClCompile>

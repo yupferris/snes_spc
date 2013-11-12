@@ -89,7 +89,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\snes_spc\SNES_SPC_misc.cpp" />
-    <ClCompile Include="..\snes_spc\SNES_SPC_state.cpp" />
     <ClCompile Include="..\snes_spc\spc.cpp" />
     <ClCompile Include="..\snes_spc\SPC_DSP.cpp" />
     <ClCompile Include="..\snes_spc\SPC_Filter.cpp" />

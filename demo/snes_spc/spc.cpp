@@ -58,12 +58,6 @@ spc_err_t spc_load_spc   ( SNES_SPC* s, void const* p, long n )         { return
 void spc_clear_echo      ( SNES_SPC* s )                                { s->clear_echo(); }
 spc_err_t spc_play       ( SNES_SPC* s, int count, short* out )         { return s->play( count, out ); }
 spc_err_t spc_skip       ( SNES_SPC* s, int count )                     { return s->skip( count ); }
-#if !SPC_NO_COPY_STATE_FUNCS
-void spc_copy_state      ( SNES_SPC* s, unsigned char** p, spc_copy_func_t f ) { s->copy_state( p, f ); }
-void spc_init_header     ( void* spc_out )                              { SNES_SPC::init_header( spc_out ); }
-void spc_save_spc        ( SNES_SPC* s, void* spc_out )                 { s->save_spc( spc_out ); }
-int  spc_check_kon       ( SNES_SPC* s )                                { return s->check_kon(); }
-#endif
 
 SPC_Filter* spc_filter_new( void )                              { return new SPC_Filter; }
 void spc_filter_delete( SPC_Filter* f )                         { delete f; }

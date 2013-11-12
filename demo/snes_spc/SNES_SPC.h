@@ -83,26 +83,6 @@ public:
 	
 	// Skips count samples. Several times faster than play() when using fast DSP.
 	blargg_err_t skip( int count );
-	
-// State save/load (only available with accurate DSP)
-
-#if !SPC_NO_COPY_STATE_FUNCS
-	// Saves/loads state
-	enum { state_size = 67 * 1024L }; // maximum space needed when saving
-	typedef SPC_DSP::copy_func_t copy_func_t;
-	void copy_state( unsigned char** io, copy_func_t );
-	
-	// Writes minimal header to spc_out
-	static void init_header( void* spc_out );
-
-	// Saves emulator state as SPC file data. Writes spc_file_size bytes to spc_out.
-	// Does not set up SPC header; use init_header() for that.
-	void save_spc( void* spc_out );
-
-	// Returns true if new key-on events occurred since last check. Useful for
-	// trimming silence while saving an SPC.
-	bool check_kon();
-#endif
 
 public:
 	BLARGG_DISABLE_NOTHROW
@@ -266,9 +246,5 @@ inline void SNES_SPC::write_port( time_t t, int port, int data )
 inline void SNES_SPC::mute_voices( int mask ) { dsp.mute_voices( mask ); }
 	
 inline void SNES_SPC::disable_surround( bool disable ) { dsp.disable_surround( disable ); }
-
-#if !SPC_NO_COPY_STATE_FUNCS
-inline bool SNES_SPC::check_kon() { return dsp.check_kon(); }
-#endif
 
 #endif
