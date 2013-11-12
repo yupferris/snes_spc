@@ -67,10 +67,6 @@ void spc_end_frame( SNES_SPC*, spc_time_t end_time );
 enum { spc_voice_count = 8 };
 void spc_mute_voices( SNES_SPC*, int mask );
 
-/* If true, prevents channels and global volumes from being phase-negated.
-Only supported by fast DSP; has no effect on accurate DSP. */
-void spc_disable_surround( SNES_SPC*, int disable );
-
 /**** SPC music playback *****/
 
 /* Loads SPC data into emulator. Returns NULL on success, otherwise error string. */

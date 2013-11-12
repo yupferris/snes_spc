@@ -56,11 +56,6 @@ void spc_dsp_run( SPC_DSP*, int clock_count );
 enum { spc_dsp_voice_count = 8 };
 void spc_dsp_mute_voices( SPC_DSP*, int mask );
 
-/* If true, prevents channels and global volumes from being phase-negated.
-Only supported by fast DSP; has no effect on accurate DSP. */
-void spc_dsp_disable_surround( SPC_DSP*, int disable );
-
-
 /**** State save/load *****/
 
 /* Resets DSP and uses supplied values to initialize registers */

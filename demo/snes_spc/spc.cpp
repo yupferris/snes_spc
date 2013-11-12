@@ -48,7 +48,6 @@ int  spc_read_port       ( SNES_SPC* s, spc_time_t t, int p )           { return
 void spc_write_port      ( SNES_SPC* s, spc_time_t t, int p, int d )    { s->write_port( t, p, d ); }
 void spc_end_frame       ( SNES_SPC* s, spc_time_t t )                  { s->end_frame( t ); }  
 void spc_mute_voices     ( SNES_SPC* s, int mask )                      { s->mute_voices( mask ); }
-void spc_disable_surround( SNES_SPC* s, int disable )                   { s->disable_surround( disable != 0 ); }
 spc_err_t spc_load_spc   ( SNES_SPC* s, void const* p, long n )         { return s->load_spc( p, n ); }
 void spc_clear_echo      ( SNES_SPC* s )                                { s->clear_echo(); }
 spc_err_t spc_play       ( SNES_SPC* s, int count, short* out )         { return s->play( count, out ); }
