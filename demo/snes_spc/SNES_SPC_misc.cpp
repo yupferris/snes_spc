@@ -19,9 +19,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include "blargg_source.h"
 
-#define RAM         (m.ram.ram)
-#define REGS        (m.smp_regs [0])
-#define REGS_IN     (m.smp_regs [1])
+#define RAM         (ram)
+#define REGS        (smp_regs [0])
+#define REGS_IN     (smp_regs [1])
 
 // (n ? n : 256)
 #define IF_0_THEN_256( n ) ((uint8_t) ((n) - 1) + 1)
@@ -31,13 +31,13 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 SNES_SPC::SNES_SPC()
 {
-	memset( &m, 0, sizeof m );
+	memset( ram, 0, sizeof(ram) );
 	dsp = new SPC_DSP( RAM );
 	
 	// Most SPC music doesn't need ROM, and almost all the rest only rely
 	// on these two bytes
-	m.rom [0x3E] = 0xFF;
-	m.rom [0x3F] = 0xC0;
+	rom [0x3E] = 0xFF;
+	rom [0x3F] = 0xC0;
 	
 	static unsigned char const cycle_table [128] =
 	{//   01   23   45   67   89   AB   CD   EF
@@ -63,8 +63,8 @@ SNES_SPC::SNES_SPC()
 	for ( int i = 0; i < 128; i++ )
 	{
 		int n = cycle_table [i];
-		m.cycle_table [i * 2 + 0] = n >> 4;
-		m.cycle_table [i * 2 + 1] = n & 0x0F;
+		this->cycle_table [i * 2 + 0] = n >> 4;
+		this->cycle_table [i * 2 + 1] = n & 0x0F;
 	}
 	
 	reset();
@@ -77,7 +77,7 @@ SNES_SPC::~SNES_SPC()
 
 void SNES_SPC::init_rom( uint8_t const in [rom_size] )
 {
-	memcpy( m.rom, in, sizeof m.rom );
+	memcpy( rom, in, sizeof rom );
 }
 
 // Timer registers have been loaded. Applies these to the timers. Does not
@@ -87,7 +87,7 @@ void SNES_SPC::timers_loaded()
 	int i;
 	for ( i = 0; i < timer_count; i++ )
 	{
-		Timer* t = &m.timers [i];
+		Timer* t = &timers [i];
 		t->period  = IF_0_THEN_256( REGS [r_t0target + i] );
 		t->enabled = REGS [r_control] >> i & 1;
 		t->counter = REGS_IN [r_t0out + i] & 0x0F;
@@ -96,9 +96,9 @@ void SNES_SPC::timers_loaded()
 	int const timer2_shift = 4; // 64 kHz
 	int const other_shift  = 3; //  8 kHz
 	
-	m.timers [2].prescaler = timer2_shift;
-	m.timers [1].prescaler = timer2_shift + other_shift;
-	m.timers [0].prescaler = timer2_shift + other_shift;
+	timers [2].prescaler = timer2_shift;
+	timers [1].prescaler = timer2_shift + other_shift;
+	timers [0].prescaler = timer2_shift + other_shift;
 }
 
 // Loads registers from unified 16-byte format
@@ -119,24 +119,24 @@ void SNES_SPC::load_regs( uint8_t const in [reg_count] )
 // and timer counts. Copies these to proper registers.
 void SNES_SPC::ram_loaded()
 {
-	m.rom_enabled = 0;
+	rom_enabled = 0;
 	load_regs( &RAM [0xF0] );
 	
 	// Put STOP instruction around memory to catch PC underflow/overflow
-	memset( m.ram.padding1, cpu_pad_fill, sizeof m.ram.padding1 );
-	memset( m.ram.padding2, cpu_pad_fill, sizeof m.ram.padding2 );
+	memset( padding1, cpu_pad_fill, sizeof padding1 );
+	memset( padding2, cpu_pad_fill, sizeof padding2 );
 }
 
 void SNES_SPC::reset_time_regs()
 {
-	m.cpu_error     = 0;
-	m.echo_accessed = 0;
-	m.spc_time      = 0;
-	m.dsp_time      = 0;
+	cpu_error     = 0;
+	echo_accessed = 0;
+	spc_time      = 0;
+	dsp_time      = 0;
 	
 	for ( int i = 0; i < timer_count; i++ )
 	{
-		Timer* t = &m.timers [i];
+		Timer* t = &timers [i];
 		t->next_time = 1;
 		t->divider   = 0;
 	}
@@ -144,7 +144,7 @@ void SNES_SPC::reset_time_regs()
 	enable_rom( REGS [r_control] & 0x80 );
 	timers_loaded();
 	
-	m.extra_clocks = 0;
+	extra_clocks = 0;
 	reset_buf();
 }
 
@@ -155,8 +155,8 @@ void SNES_SPC::reset_common( int timer_counter_init )
 		REGS_IN [r_t0out + i] = timer_counter_init;
 	
 	// Run IPL ROM
-	memset( &m.cpu_regs, 0, sizeof m.cpu_regs );
-	m.cpu_regs.pc = rom_addr;
+	memset( &cpu_regs, 0, sizeof cpu_regs );
+	cpu_regs.pc = rom_addr;
 	
 	REGS [r_test   ] = 0x0A;
 	REGS [r_control] = 0xB0; // ROM enabled, clear ports
@@ -198,12 +198,12 @@ blargg_err_t SNES_SPC::load_spc( void const* data, long size )
 		return "Corrupt SPC file";
 	
 	// CPU registers
-	m.cpu_regs.pc  = spc->pch * 0x100 + spc->pcl;
-	m.cpu_regs.a   = spc->a;
-	m.cpu_regs.x   = spc->x;
-	m.cpu_regs.y   = spc->y;
-	m.cpu_regs.psw = spc->psw;
-	m.cpu_regs.sp  = spc->sp;
+	cpu_regs.pc  = spc->pch * 0x100 + spc->pcl;
+	cpu_regs.a   = spc->a;
+	cpu_regs.x   = spc->x;
+	cpu_regs.y   = spc->y;
+	cpu_regs.psw = spc->psw;
+	cpu_regs.sp  = spc->sp;
 	
 	// RAM and registers
 	memcpy( RAM, spc->ram, 0x10000 );
@@ -235,12 +235,12 @@ void SNES_SPC::clear_echo()
 void SNES_SPC::reset_buf()
 {
 	// Start with half extra buffer of silence
-	sample_t* out = m.extra_buf;
-	while ( out < &m.extra_buf [extra_size / 2] )
+	sample_t* out = extra_buf;
+	while ( out < &extra_buf [extra_size / 2] )
 		*out++ = 0;
 	
-	m.extra_pos = out;
-	m.buf_begin = 0;
+	extra_pos = out;
+	buf_begin = 0;
 	
 	dsp->set_output( 0, 0 );
 }
@@ -249,16 +249,16 @@ void SNES_SPC::set_output( sample_t* out, int size )
 {
 	require( (size & 1) == 0 ); // size must be even
 	
-	m.extra_clocks &= clocks_per_sample - 1;
+	extra_clocks &= clocks_per_sample - 1;
 	if ( out )
 	{
 		sample_t const* out_end = out + size;
-		m.buf_begin = out;
-		m.buf_end   = out_end;
+		buf_begin = out;
+		buf_end   = out_end;
 		
 		// Copy extra to output
-		sample_t const* in = m.extra_buf;
-		while ( in < m.extra_pos && out < out_end )
+		sample_t const* in = extra_buf;
+		while ( in < extra_pos && out < out_end )
 			*out++ = *in++;
 		
 		// Handle output being full already
@@ -269,7 +269,7 @@ void SNES_SPC::set_output( sample_t* out, int size )
 			out_end = &dsp->extra() [extra_size];
 			
 			// Copy any remaining extra samples as if DSP wrote them
-			while ( in < m.extra_pos )
+			while ( in < extra_pos )
 				*out++ = *in++;
 			assert( out <= out_end );
 		}
@@ -285,24 +285,24 @@ void SNES_SPC::set_output( sample_t* out, int size )
 void SNES_SPC::save_extra()
 {
 	// Get end pointers
-	sample_t const* main_end = m.buf_end;     // end of data written to buf
+	sample_t const* main_end = buf_end;     // end of data written to buf
 	sample_t const* dsp_end  = dsp->out_pos(); // end of data written to dsp.extra()
-	if ( m.buf_begin <= dsp_end && dsp_end <= main_end )
+	if ( buf_begin <= dsp_end && dsp_end <= main_end )
 	{
 		main_end = dsp_end;
 		dsp_end  = dsp->extra(); // nothing in DSP's extra
 	}
 	
 	// Copy any extra samples at these ends into extra_buf
-	sample_t* out = m.extra_buf;
+	sample_t* out = extra_buf;
 	sample_t const* in;
-	for ( in = m.buf_begin + sample_count(); in < main_end; in++ )
+	for ( in = buf_begin + sample_count(); in < main_end; in++ )
 		*out++ = *in;
 	for ( in = dsp->extra(); in < dsp_end ; in++ )
 		*out++ = *in;
 	
-	m.extra_pos = out;
-	assert( out <= &m.extra_buf [extra_size] );
+	extra_pos = out;
+	assert( out <= &extra_buf [extra_size] );
 }
 
 blargg_err_t SNES_SPC::play( int count, sample_t* out )
@@ -314,8 +314,8 @@ blargg_err_t SNES_SPC::play( int count, sample_t* out )
 		end_frame( count * (clocks_per_sample / 2) );
 	}
 	
-	const char* err = m.cpu_error;
-	m.cpu_error = 0;
+	const char* err = cpu_error;
+	cpu_error = 0;
 	return err;
 }
 

@@ -97,54 +97,47 @@ public:
 private:
 	SPC_DSP *dsp;
 
-	struct state_t
+	Timer timers [timer_count];
+		
+	uint8_t smp_regs [2] [reg_count];
+		
+	struct
 	{
-		Timer timers [timer_count];
+		int pc;
+		int a;
+		int x;
+		int y;
+		int psw;
+		int sp;
+	} cpu_regs;
 		
-		uint8_t smp_regs [2] [reg_count];
+	rel_time_t  dsp_time;
+	time_t      spc_time;
+	bool        echo_accessed;
 		
-		struct
-		{
-			int pc;
-			int a;
-			int x;
-			int y;
-			int psw;
-			int sp;
-		} cpu_regs;
+	int         skipped_kon;
+	int         skipped_koff;
+	const char* cpu_error;
 		
-		rel_time_t  dsp_time;
-		time_t      spc_time;
-		bool        echo_accessed;
+	int         extra_clocks;
+	sample_t*   buf_begin;
+	sample_t const* buf_end;
+	sample_t*   extra_pos;
+	sample_t    extra_buf [extra_size];
 		
-		int         skipped_kon;
-		int         skipped_koff;
-		const char* cpu_error;
+	int         rom_enabled;
+	uint8_t     rom    [rom_size];
+	uint8_t     hi_ram [rom_size];
 		
-		int         extra_clocks;
-		sample_t*   buf_begin;
-		sample_t const* buf_end;
-		sample_t*   extra_pos;
-		sample_t    extra_buf [extra_size];
+	unsigned char cycle_table [256];
 		
-		int         rom_enabled;
-		uint8_t     rom    [rom_size];
-		uint8_t     hi_ram [rom_size];
-		
-		unsigned char cycle_table [256];
-		
-		struct
-		{
-			// padding to neutralize address overflow
-			union {
-				uint8_t padding1 [0x100];
-				uint16_t align; // makes compiler align data for 16-bit access
-			} padding1 [1];
-			uint8_t ram      [0x10000];
-			uint8_t padding2 [0x100];
-		} ram;
-	};
-	state_t m;
+	// padding to neutralize address overflow
+	union {
+		uint8_t padding1 [0x100];
+		uint16_t align; // makes compiler align data for 16-bit access
+	} padding1 [1];
+	uint8_t ram      [0x10000];
+	uint8_t padding2 [0x100];
 	
 	enum { rom_addr = 0xFFC0 };
 	
@@ -212,7 +205,7 @@ private:
 
 #include <assert.h>
 
-inline int SNES_SPC::sample_count() const { return (m.extra_clocks >> 5) * 2; }
+inline int SNES_SPC::sample_count() const { return (extra_clocks >> 5) * 2; }
 
 inline int SNES_SPC::read_port( time_t t, int port )
 {

@@ -29,7 +29,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 	int ti = dp_addr - (r_t0out + 0xF0);\
 	if ( (unsigned) ti < timer_count )\
 	{\
-		Timer* t = &m.timers [ti];\
+		Timer* t = &timers [ti];\
 		if ( adj_time >= t->next_time )\
 			t = run_timer_( t, adj_time );\
 		out = t->counter;\
@@ -141,10 +141,9 @@ int const nz_neg_mask = 0x880; // either bit set indicates N flag set
 
 SPC_CPU_RUN_FUNC
 {
-	uint8_t* const ram = RAM;
-	int a = m.cpu_regs.a;
-	int x = m.cpu_regs.x;
-	int y = m.cpu_regs.y;
+	int a = cpu_regs.a;
+	int x = cpu_regs.x;
+	int y = cpu_regs.y;
 	uint8_t const* pc;
 	uint8_t* sp;
 	int psw;
@@ -152,9 +151,9 @@ SPC_CPU_RUN_FUNC
 	int nz;
 	int dp;
 	
-	SET_PC( m.cpu_regs.pc );
-	SET_SP( m.cpu_regs.sp );
-	SET_PSW( m.cpu_regs.psw );
+	SET_PC( cpu_regs.pc );
+	SET_SP( cpu_regs.sp );
+	SET_PSW( cpu_regs.psw );
 	
 	goto loop;
 	
@@ -175,7 +174,7 @@ loop:
 	check( (unsigned) y < 0x100 );
 	
 	opcode = *pc;
-	if ( (rel_time += m.cycle_table [opcode]) > 0 )
+	if ( (rel_time += cycle_table [opcode]) > 0 )
 		goto out_of_time;
 	
 	#ifdef SPC_CPU_OPCODE_HOOK
@@ -1157,28 +1156,28 @@ loop:
 		SUSPICIOUS_OPCODE( "STOP/SLEEP" );
 		--pc;
 		rel_time = 0;
-		m.cpu_error = "SPC emulation error";
+		cpu_error = "SPC emulation error";
 		goto stop;
 	} // switch
 	
 	assert( 0 );
 }   
 out_of_time:
-	rel_time -= m.cycle_table [*pc]; // undo partial execution of opcode
+	rel_time -= cycle_table [*pc]; // undo partial execution of opcode
 stop:
 	
 	// Uncache registers
 	if ( GET_PC() >= 0x10000 )
 		dprintf( "SPC: PC wrapped around\n" );
-	m.cpu_regs.pc = (uint16_t) GET_PC();
-	m.cpu_regs.sp = ( uint8_t) GET_SP();
-	m.cpu_regs.a  = ( uint8_t) a;
-	m.cpu_regs.x  = ( uint8_t) x;
-	m.cpu_regs.y  = ( uint8_t) y;
+	cpu_regs.pc = (uint16_t) GET_PC();
+	cpu_regs.sp = ( uint8_t) GET_SP();
+	cpu_regs.a  = ( uint8_t) a;
+	cpu_regs.x  = ( uint8_t) x;
+	cpu_regs.y  = ( uint8_t) y;
 	{
 		int temp;
 		GET_PSW( temp );
-		m.cpu_regs.psw = (uint8_t) temp;
+		cpu_regs.psw = (uint8_t) temp;
 	}
 }
 SPC_CPU_RUN_FUNC_END

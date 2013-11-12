@@ -19,9 +19,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include "blargg_source.h"
 
-#define RAM         (m.ram.ram)
-#define REGS        (m.smp_regs [0])
-#define REGS_IN     (m.smp_regs [1])
+#define RAM         (ram)
+#define REGS        (smp_regs [0])
+#define REGS_IN     (smp_regs [1])
 
 // (n ? n : 256)
 #define IF_0_THEN_256( n ) ((uint8_t) ((n) - 1) + 1)
@@ -69,12 +69,12 @@ inline SNES_SPC::Timer* SNES_SPC::run_timer( Timer* t, rel_time_t time )
 
 void SNES_SPC::enable_rom( int enable )
 {
-	if ( m.rom_enabled != enable )
+	if ( rom_enabled != enable )
 	{
-		m.rom_enabled = enable;
+		rom_enabled = enable;
 		if ( enable )
-			memcpy( m.hi_ram, &RAM [rom_addr], sizeof m.hi_ram );
-		memcpy( &RAM [rom_addr], (enable ? m.rom : m.hi_ram), rom_size );
+			memcpy( hi_ram, &RAM [rom_addr], sizeof hi_ram );
+		memcpy( &RAM [rom_addr], (enable ? rom : hi_ram), rom_size );
 		// TODO: ROM can still get overwritten when DSP writes to echo buffer
 	}
 }
@@ -84,9 +84,9 @@ void SNES_SPC::enable_rom( int enable )
 
 #define RUN_DSP( time, offset ) \
 	{\
-		int count = (time) - m.dsp_time;\
+		int count = (time) - dsp_time;\
 		assert( count > 0 );\
-		m.dsp_time = (time);\
+		dsp_time = (time);\
 		dsp->run( count );\
 	}
 
@@ -127,7 +127,7 @@ void SNES_SPC::cpu_write_smp_reg_( int data, rel_time_t time, int addr )
 	case r_t0target:
 	case r_t1target:
 	case r_t2target: {
-		Timer* t = &m.timers [addr - r_t0target];
+		Timer* t = &timers [addr - r_t0target];
 		int period = IF_0_THEN_256( data );
 		if ( t->period != period )
 		{
@@ -143,7 +143,7 @@ void SNES_SPC::cpu_write_smp_reg_( int data, rel_time_t time, int addr )
 		dprintf( "SPC wrote to counter %d\n", (int) addr - r_t0out );
 		
 		if ( data < no_read_before_write  / 2 )
-			run_timer( &m.timers [addr - r_t0out], time - 1 )->counter = 0;
+			run_timer( &timers [addr - r_t0out], time - 1 )->counter = 0;
 		break;
 	
 	// Registers that act like RAM
@@ -174,7 +174,7 @@ void SNES_SPC::cpu_write_smp_reg_( int data, rel_time_t time, int addr )
 		{
 			for ( int i = 0; i < timer_count; i++ )
 			{
-				Timer* t = &m.timers [i];
+				Timer* t = &timers [i];
 				int enabled = data >> i & 1;
 				if ( t->enabled != enabled )
 				{
@@ -205,9 +205,9 @@ void SNES_SPC::cpu_write_high( int data, int i, rel_time_t time )
 {
 	if ( i < rom_size )
 	{
-		m.hi_ram [i] = (uint8_t) data;
-		if ( m.rom_enabled )
-			RAM [i + rom_addr] = m.rom [i]; // restore overwritten ROM
+		hi_ram [i] = (uint8_t) data;
+		if ( rom_enabled )
+			RAM [i + rom_addr] = rom [i]; // restore overwritten ROM
 	}
 	else
 	{
@@ -290,7 +290,7 @@ int SNES_SPC::cpu_read( int addr, rel_time_t time )
 			// Timers
 			if ( (unsigned) reg < timer_count ) // 90%
 			{
-				Timer* t = &m.timers [reg];
+				Timer* t = &timers [reg];
 				if ( time >= t->next_time )
 					t = run_timer_( t, time );
 				result = t->counter;
@@ -319,21 +319,21 @@ int SNES_SPC::cpu_read( int addr, rel_time_t time )
 #define SPC_CPU_RUN_FUNC \
 BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )\
 {\
-	rel_time_t rel_time = m.spc_time - end_time;\
+	rel_time_t rel_time = spc_time - end_time;\
 	assert( rel_time <= 0 );\
-	m.spc_time = end_time;\
-	m.dsp_time += rel_time;\
-	m.timers [0].next_time += rel_time;\
-	m.timers [1].next_time += rel_time;\
-	m.timers [2].next_time += rel_time;
+	spc_time = end_time;\
+	dsp_time += rel_time;\
+	timers [0].next_time += rel_time;\
+	timers [1].next_time += rel_time;\
+	timers [2].next_time += rel_time;
 
 #define SPC_CPU_RUN_FUNC_END \
-	m.spc_time += rel_time;\
-	m.dsp_time -= rel_time;\
-	m.timers [0].next_time -= rel_time;\
-	m.timers [1].next_time -= rel_time;\
-	m.timers [2].next_time -= rel_time;\
-	assert( m.spc_time <= end_time );\
+	spc_time += rel_time;\
+	dsp_time -= rel_time;\
+	timers [0].next_time -= rel_time;\
+	timers [1].next_time -= rel_time;\
+	timers [2].next_time -= rel_time;\
+	assert( spc_time <= end_time );\
 	return &REGS [r_cpuio0];\
 }
 
@@ -343,29 +343,29 @@ void SNES_SPC::end_frame( time_t end_time )
 {
 	// Catch CPU up to as close to end as possible. If final instruction
 	// would exceed end, does NOT execute it and leaves m.spc_time < end.
-	if ( end_time > m.spc_time )
+	if ( end_time > spc_time )
 		run_until_( end_time );
 	
-	m.spc_time     -= end_time;
-	m.extra_clocks += end_time;
+	spc_time     -= end_time;
+	extra_clocks += end_time;
 	
 	// Greatest number of clocks early that emulation can stop early due to
 	// not being able to execute current instruction without going over
 	// allowed time.
-	assert( -cpu_lag_max <= m.spc_time && m.spc_time <= 0 );
+	assert( -cpu_lag_max <= spc_time && spc_time <= 0 );
 	
 	// Catch timers up to CPU
 	for ( int i = 0; i < timer_count; i++ )
-		run_timer( &m.timers [i], 0 );
+		run_timer( &timers [i], 0 );
 	
 	// Catch DSP up to CPU
-	if ( m.dsp_time < 0 )
+	if ( dsp_time < 0 )
 	{
 		RUN_DSP( 0, max_reg_time );
 	}
 	
 	// Save any extra samples beyond what should be generated
-	if ( m.buf_begin )
+	if ( buf_begin )
 		save_extra();
 }
 
