@@ -29,9 +29,6 @@ SNES_SPC* spc_new( void )
 	assert( spc_voice_count         == (int) SNES_SPC::voice_count );
 	assert( spc_tempo_unit          == (int) SNES_SPC::tempo_unit );
 	assert( spc_file_size           == (int) SNES_SPC::spc_file_size );
-	#if !SPC_NO_COPY_STATE_FUNCS
-	assert( spc_state_size          == (int) SNES_SPC::state_size );
-	#endif
 	
 	SNES_SPC* s = new SNES_SPC;
 	if ( s && s->init() )
