@@ -19,7 +19,9 @@
       <Filter>snes_spc</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="..\snes_spc\SnesSmp.cpp" />
+    <ClCompile Include="..\snes_spc\SnesSmp.cpp">
+      <Filter>snes_spc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\snes_spc\blargg_common.h">
@@ -43,8 +45,10 @@
     <ClInclude Include="..\snes_spc\SPC_Filter.h">
       <Filter>snes_spc</Filter>
     </ClInclude>
-    <ClInclude Include="..\snes_spc\SnesSmp.h" />
     <ClInclude Include="..\snes_spc\CommonTypes.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\snes_spc\SnesSmp.h">
       <Filter>snes_spc</Filter>
     </ClInclude>
   </ItemGroup>

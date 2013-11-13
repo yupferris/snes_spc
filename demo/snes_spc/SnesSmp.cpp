@@ -43,14 +43,123 @@ void SnesSmp::Reset()
 	}
 }
 
-void SnesSmp::LoadSpc(const spc_file_t *spc)
+int SnesSmp::Run(int targetCycles)
 {
-	Regs.pc  = spc->pch * 0x100 + spc->pcl;
-	Regs.a   = spc->a;
-	Regs.x   = spc->x;
-	Regs.y   = spc->y;
-	Regs.psw = spc->psw;
-	Regs.sp  = spc->sp;
+	throw FSL_EXCEPTION("asdfasdfasdf");
+}
+
+void SnesSmp::SetRegPc(unsigned short value)
+{
+	Regs.pc = value;
+}
+
+void SnesSmp::SetRegA(unsigned char value)
+{
+	Regs.a = value;
+}
+
+void SnesSmp::SetRegX(unsigned char value)
+{
+	Regs.x = value;
+}
+
+void SnesSmp::SetRegY(unsigned char value)
+{
+	Regs.y = value;
+}
+
+void SnesSmp::SetRegSp(unsigned char value)
+{
+	Regs.sp = value;
+}
+
+void SnesSmp::SetRegYa(unsigned short value)
+{
+	Regs.a = value & 0xff;
+	Regs.y = (value >> 8) & 0xff;
+}
+
+unsigned short SnesSmp::GetRegPc() const
+{
+	return Regs.pc;
+}
+
+unsigned char SnesSmp::GetRegA() const
+{
+	return Regs.a;
+}
+
+unsigned char SnesSmp::GetRegX() const
+{
+	return Regs.x;
+}
+
+unsigned char SnesSmp::GetRegY() const
+{
+	return Regs.y;
+}
+
+unsigned char SnesSmp::GetRegSp() const
+{
+	return Regs.sp;
+}
+
+unsigned short SnesSmp::GetRegYa() const
+{
+	return (Regs.y << 8) | Regs.a;
+}
+
+void SnesSmp::SetPsw(unsigned char value)
+{
+	Regs.psw = value;
+}
+
+// Hex value in name to clarify code and bit shifting.
+// Flag stored in indicated variable during emulation
+int const n80 = 0x80; // nz
+int const v40 = 0x40; // psw
+int const p20 = 0x20; // dp
+int const b10 = 0x10; // psw
+int const h08 = 0x08; // psw
+int const i04 = 0x04; // psw
+int const z02 = 0x02; // nz
+int const c01 = 0x01; // c
+
+int const nz_neg_mask = 0x880; // either bit set indicates N flag set
+
+unsigned char SnesSmp::GetPsw() const
+{
+	return Regs.psw;
+}
+
+bool SnesSmp::GetPswC() const
+{
+	return (Regs.psw & c01) != 0;
+}
+
+bool SnesSmp::GetPswZ() const
+{
+	return (Regs.psw & z02) != 0;
+}
+
+bool SnesSmp::GetPswH() const
+{
+	return (Regs.psw & h08) != 0;
+}
+
+bool SnesSmp::GetPswP() const
+{
+	return (Regs.psw & p20) != 0;
+}
+
+bool SnesSmp::GetPswV() const
+{
+	return (Regs.psw & v40) != 0;
+}
+
+bool SnesSmp::GetPswN() const
+{
+	return (Regs.psw & n80) != 0;
 }
 
 //// Memory access
@@ -119,19 +228,6 @@ unsigned SnesSmp::CPU_mem_bit( uint16_t pc, rel_time_t rel_time )
 }
 
 //// Status flag handling
-
-// Hex value in name to clarify code and bit shifting.
-// Flag stored in indicated variable during emulation
-int const n80 = 0x80; // nz
-int const v40 = 0x40; // psw
-int const p20 = 0x20; // dp
-int const b10 = 0x10; // psw
-int const h08 = 0x08; // psw
-int const i04 = 0x04; // psw
-int const z02 = 0x02; // nz
-int const c01 = 0x01; // c
-
-int const nz_neg_mask = 0x880; // either bit set indicates N flag set
 
 #define GET_PSW( out )\
 {\

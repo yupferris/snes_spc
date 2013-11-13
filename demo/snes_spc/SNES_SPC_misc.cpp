@@ -163,7 +163,13 @@ blargg_err_t SNES_SPC::load_spc( void const* data, long size )
 	if ( size < spc_min_file_size )
 		return "Corrupt SPC file";
 	
-	smp->LoadSpc(spc);
+	// CPU registers
+	smp->SetRegPc(spc->pch * 0x100 + spc->pcl);
+	smp->SetRegA(spc->a);
+	smp->SetRegX(spc->x);
+	smp->SetRegY(spc->y);
+	smp->SetPsw(spc->psw);
+	smp->SetRegSp(spc->sp);
 	
 	// RAM and registers
 	memcpy( ram, spc->ram, 0x10000 );
