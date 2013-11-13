@@ -326,6 +326,10 @@ void SNES_SPC::end_frame( time_t end_time )
 		save_extra();
 }
 
+void SNES_SPC::run_until( time_t end_time )
+{
+
+}
 
 //// Memory access
 

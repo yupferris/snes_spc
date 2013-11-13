@@ -8,11 +8,13 @@
 #include "SnesSmp.h"
 #include "blargg_endian.h"
 
+typedef BOOST::uint8_t uint8_t;
+typedef BOOST::uint16_t uint16_t;
+typedef int rel_time_t;
+
 class SNES_SPC {
 public:
-	typedef BOOST::uint8_t uint8_t;
-	
-	SNES_SPC();
+SNES_SPC();
 	~SNES_SPC();
 	
 	// Sample pairs generated per second
@@ -73,13 +75,6 @@ public:
 public:
 	BLARGG_DISABLE_NOTHROW
 	
-	typedef BOOST::uint16_t uint16_t;
-	
-	// Time relative to m_spc_time. Speeds up code a bit by eliminating need to
-	// constantly add m_spc_time to time from CPU. CPU uses time that ends at
-	// 0 to eliminate reloading end time every instruction. It pays off.
-	typedef int rel_time_t;
-	
 	struct Timer
 	{
 		rel_time_t next_time; // time of next event
@@ -94,6 +89,7 @@ public:
 	enum { extra_size = SPC_DSP::extra_size };
 	
 	enum { signature_size = 35 };
+	enum { rom_addr = 0xFFC0 };
 	
 private:
 	SnesSmp *smp;
@@ -135,8 +131,6 @@ private:
 	
 	uint8_t ram      [0x10000];
 	
-	enum { rom_addr = 0xFFC0 };
-	
 	enum { skipping_time = 127 };
 	
 	// Value that padding should be filled with
@@ -172,27 +166,29 @@ private:
 	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
 	
 	bool check_echo_access ( int addr );
+
+	void run_until( time_t end_time );
 	uint8_t* run_until_( time_t end_time );
-	
-	struct spc_file_t
-	{
-		char    signature [signature_size];
-		uint8_t has_id666;
-		uint8_t version;
-		uint8_t pcl, pch;
-		uint8_t a;
-		uint8_t x;
-		uint8_t y;
-		uint8_t psw;
-		uint8_t sp;
-		char    text [212];
-		uint8_t ram [0x10000];
-		uint8_t dsp [128];
-		uint8_t unused [0x40];
-		uint8_t ipl_rom [0x40];
-	};
 
 	static char const signature [signature_size + 1];
+};
+
+struct spc_file_t
+{
+	char    signature [SNES_SPC::signature_size];
+	uint8_t has_id666;
+	uint8_t version;
+	uint8_t pcl, pch;
+	uint8_t a;
+	uint8_t x;
+	uint8_t y;
+	uint8_t psw;
+	uint8_t sp;
+	char    text [212];
+	uint8_t ram [0x10000];
+	uint8_t dsp [128];
+	uint8_t unused [0x40];
+	uint8_t ipl_rom [0x40];
 };
 
 #include <assert.h>
