@@ -71,7 +71,7 @@ void SNES_SPC::SetAudioDriver(Fel::IAudioDriver *audioDriver)
 
 void SNES_SPC::CpuCyclesCallback(int numCycles)
 {
-	// TODO!!
+	rel_time += numCycles;
 }
 
 unsigned char SNES_SPC::ReadByte(unsigned int address)

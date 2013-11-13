@@ -339,7 +339,7 @@ void SNES_SPC::end_frame( time_t end_time )
 
 BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 {
-	rel_time_t rel_time = spc_time - end_time;
+	rel_time = spc_time - end_time;
 	assert( rel_time <= 0 );
 	spc_time = end_time;
 	dsp_time += rel_time;
