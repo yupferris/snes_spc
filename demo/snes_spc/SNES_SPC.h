@@ -175,7 +175,7 @@ private:
 	void cpu_write         ( int data, int addr, rel_time_t );
 	int cpu_read_smp_reg   ( int i, rel_time_t );
 	int cpu_read           ( int addr, rel_time_t );
-	unsigned CPU_mem_bit   ( uint8_t const* pc, rel_time_t );
+	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
 	
 	bool check_echo_access ( int addr );
 	uint8_t* run_until_( time_t end_time );

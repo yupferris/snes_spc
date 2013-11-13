@@ -363,10 +363,8 @@ void SNES_SPC::end_frame( time_t end_time )
 
 #define READ_PROG16( addr )                 GET_LE16( ram + (addr) )
 
-#define SET_PC( n )     (pc = ram + (n))
-#define GET_PC()        (pc - ram)
-#define READ_PC()       (*(pc))
-#define READ_PC16()     GET_LE16( pc )
+#define READ_PC()       READ( 0, pc )
+#define READ_PC16()     GET_LE16( ram + pc )
 
 #define PUSH( data )\
 {\
@@ -394,7 +392,7 @@ void SNES_SPC::end_frame( time_t end_time )
 
 #define MEM_BIT( rel ) CPU_mem_bit( pc, rel_time + rel )
 
-unsigned SNES_SPC::CPU_mem_bit( uint8_t const* pc, rel_time_t rel_time )
+unsigned SNES_SPC::CPU_mem_bit( uint16_t pc, rel_time_t rel_time )
 {
 	unsigned addr = READ_PC16();
 	unsigned t = READ( 0, addr & 0x1FFF ) >> (addr >> 13);
@@ -446,14 +444,14 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 	int a = cpu_regs.a;
 	int x = cpu_regs.x;
 	int y = cpu_regs.y;
-	uint8_t const* pc;
+	uint16_t pc;
 	uint8_t sp;
 	int psw;
 	int c;
 	int nz;
 	int dp;
 	
-	SET_PC( cpu_regs.pc );
+	pc = cpu_regs.pc;
 	sp = cpu_regs.sp;
 	SET_PSW( cpu_regs.psw );
 	
@@ -479,7 +477,6 @@ loop:
 	if ( (rel_time += cycle_table [opcode]) > 0 )
 		goto out_of_time;
 	
-	// TODO: if PC is at end of memory, this will get wrong operand (very obscure)
 	pc++;
 	data = READ_PC();
 	switch ( opcode )
@@ -505,8 +502,8 @@ loop:
 		BRANCH( (uint8_t) nz )
 	
 	case 0x3F:{// CALL
-		int old_addr = GET_PC() + 2;
-		SET_PC( READ_PC16() );
+		int old_addr = pc + 2;
+		pc = READ_PC16();
 		PUSHADDR16( old_addr );
 		goto loop;
 	}
@@ -515,7 +512,7 @@ loop:
 		{
 			int addr;
 			POPADDR16( addr );
-			SET_PC( addr );
+			pc = addr;
 		}
 		goto loop;
 	
@@ -1196,19 +1193,19 @@ loop:
 		BRANCH( y )
 	
 	case 0x1F: // JMP [abs+X]
-		SET_PC( READ_PC16() + x );
+		pc = READ_PC16() + x;
 		// fall through
 	case 0x5F: // JMP abs
-		SET_PC( READ_PC16() );
+		pc = READ_PC16();
 		goto loop;
 	
 // 13. SUB-ROUTINE CALL RETURN COMMANDS
 	
 	case 0x0F:{// BRK
 		int temp;
-		int ret_addr = GET_PC();
+		int ret_addr = pc;
 		SUSPICIOUS_OPCODE( "BRK" );
-		SET_PC( READ_PROG16( 0xFFDE ) ); // vector address verified
+		pc = READ_PROG16( 0xFFDE ); // vector address verified
 		PUSHADDR16( ret_addr );
 		GET_PSW( temp );
 		psw = (psw | b10) & ~i04;
@@ -1217,8 +1214,8 @@ loop:
 	}
 	
 	case 0x4F:{// PCALL offset
-		int ret_addr = GET_PC() + 1;
-		SET_PC( 0xFF00 | data );
+		int ret_addr = pc + 1;
+		pc = 0xFF00 | data;
 		PUSHADDR16( ret_addr );
 		goto loop;
 	}
@@ -1239,8 +1236,8 @@ loop:
 	case 0xD1:
 	case 0xE1:
 	case 0xF1: {
-		int ret_addr = GET_PC();
-		SET_PC( READ_PROG16( 0xFFDE - (opcode >> 3) ) );
+		int ret_addr = pc;
+		pc = READ_PROG16( 0xFFDE - (opcode >> 3) );
 		PUSHADDR16( ret_addr );
 		goto loop;
 	}
@@ -1254,7 +1251,7 @@ loop:
 		{
 			int addr;
 			POPADDR16( addr );
-			SET_PC( addr );
+			pc = addr;
 		}
 		SET_PSW( temp );
 		goto loop;
@@ -1431,11 +1428,11 @@ loop:
 	
 	case 0xFF:{// STOP
 		// handle PC wrap-around
-		unsigned addr = GET_PC() - 1;
+		unsigned addr = pc - 1;
 		if ( addr >= 0x10000 )
 		{
 			addr &= 0xFFFF;
-			SET_PC( addr );
+			pc = addr;
 			dprintf( "SPC: PC wrapped around\n" );
 			goto loop;
 		}
@@ -1456,9 +1453,9 @@ out_of_time:
 stop:
 	
 	// Uncache registers
-	if ( GET_PC() >= 0x10000 )
+	if ( pc >= 0x10000 )
 		dprintf( "SPC: PC wrapped around\n" );
-	cpu_regs.pc = (uint16_t) GET_PC();
+	cpu_regs.pc = (uint16_t) pc;
 	cpu_regs.sp = ( uint8_t) sp;
 	cpu_regs.a  = ( uint8_t) a;
 	cpu_regs.x  = ( uint8_t) x;
