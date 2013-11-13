@@ -426,9 +426,9 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 	timers [1].next_time += rel_time;
 	timers [2].next_time += rel_time;
 {
-	int a = cpu_regs.a;
-	int x = cpu_regs.x;
-	int y = cpu_regs.y;
+	int a = Regs.a;
+	int x = Regs.x;
+	int y = Regs.y;
 	uint16_t pc;
 	uint8_t sp;
 	int psw;
@@ -436,9 +436,9 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 	int nz;
 	int dp;
 	
-	pc = cpu_regs.pc;
-	sp = cpu_regs.sp;
-	SET_PSW( cpu_regs.psw );
+	pc = Regs.pc;
+	sp = Regs.sp;
+	SET_PSW( Regs.psw );
 	
 	goto loop;
 	
@@ -1440,15 +1440,15 @@ stop:
 	// Uncache registers
 	if ( pc >= 0x10000 )
 		dprintf( "SPC: PC wrapped around\n" );
-	cpu_regs.pc = (uint16_t) pc;
-	cpu_regs.sp = ( uint8_t) sp;
-	cpu_regs.a  = ( uint8_t) a;
-	cpu_regs.x  = ( uint8_t) x;
-	cpu_regs.y  = ( uint8_t) y;
+	Regs.pc = (uint16_t) pc;
+	Regs.sp = ( uint8_t) sp;
+	Regs.a  = ( uint8_t) a;
+	Regs.x  = ( uint8_t) x;
+	Regs.y  = ( uint8_t) y;
 	{
 		int temp;
 		GET_PSW( temp );
-		cpu_regs.psw = (uint8_t) temp;
+		Regs.psw = (uint8_t) temp;
 	}
 }
 	spc_time += rel_time;

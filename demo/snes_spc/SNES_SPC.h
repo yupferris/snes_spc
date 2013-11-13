@@ -111,8 +111,8 @@ private:
 		uint8_t y;
 		uint8_t psw;
 		uint8_t sp;
-	} cpu_regs;
-		
+	} Regs;
+	
 	rel_time_t  dsp_time;
 	time_t      spc_time;
 	bool        echo_accessed;
