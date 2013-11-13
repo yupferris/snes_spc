@@ -25,10 +25,11 @@ public:
 	virtual void SetVideoDriver(Fel::IVideoDriver *videoDriver);
 	virtual void SetAudioDriver(Fel::IAudioDriver *audioDriver);
 
-	// TODO: IMPLEMENT!!1
 	virtual void CpuCyclesCallback(int numCycles);
 	virtual unsigned char ReadByte(unsigned int address);
 	virtual void WriteByte(unsigned int address, unsigned char value);
+
+	SnesApu::SmpBase *GetSmp() const;
 	
 	// Sample pairs generated per second
 	enum { sample_rate = 32000 };

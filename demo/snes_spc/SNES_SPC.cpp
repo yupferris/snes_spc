@@ -346,7 +346,9 @@ void SNES_SPC::end_frame( time_t end_time )
 
 BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 {
-	rel_time = spc_time - end_time;
+	// The -11 causes crackling, since the buffer might not always get full in some cases, but
+	// it may be necessary to make sure my cpu doesn't go over time
+	rel_time = spc_time - 11 - end_time;
 	assert( rel_time <= 0 );
 	spc_time = end_time;
 	dsp_time += rel_time;

@@ -81,16 +81,22 @@ int Main(const List<String>& arguments)
 		apu->clear_echo();
 		filter->clear();
 
+		Console::WriteLine("pre-render");
+		const int preBufferSize = 0x10000;
+		short preBuffer[preBufferSize * 2];
+		const int preBufferTimes = 4;
+		for (int i = 0; i < preBufferTimes; i++)
+			apu->play(preBufferSize * 2, preBuffer);
+
+		Console::WriteLine("render");
 		auto driver = AudioDriverFactory::CreateDefault();
 		driver->SetSampleRate(SNES_SPC::sample_rate);
-
 		auto device = new OutputDevice(apu, filter, driver);
 
 		while (!GetAsyncKeyState(VK_ESCAPE))
 			Threading::Sleep(5);
 
 		delete device;
-
 		delete driver;
 
 		delete filter;

@@ -5,6 +5,7 @@
 #include "SNES_SPC.h"
 
 #include "SnesSmp.h"
+#include <SnesApu/Smp/Smp.h>
 
 #include <string.h>
 
@@ -32,7 +33,10 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 SNES_SPC::SNES_SPC()
 {
-	smp = new SnesSmp(this);
+	smp = new
+		SnesSmp(this);
+		//SnesApu::Smp(this);
+		
 	dsp = new SPC_DSP( ram );
 	
 	// Most SPC music doesn't need ROM, and almost all the rest only rely
@@ -84,6 +88,11 @@ unsigned char SNES_SPC::ReadByte(unsigned int address)
 void SNES_SPC::WriteByte(unsigned int address, unsigned char value)
 {
 	cpu_write(value, address);
+}
+
+SnesApu::SmpBase *SNES_SPC::GetSmp() const
+{
+	return smp;
 }
 
 void SNES_SPC::init_rom( uint8_t const in [rom_size] )
