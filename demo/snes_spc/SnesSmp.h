@@ -26,9 +26,10 @@ public:
 	void LoadSpc(const spc_file_t *spc);
 
 	void run_until( time_t end_time, rel_time_t& rel_time );
-	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
 
 private:
+	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
+
 	unsigned char cycle_table [256];
 
 	SNES_SPC *apu;
