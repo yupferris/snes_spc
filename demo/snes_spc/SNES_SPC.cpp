@@ -347,10 +347,10 @@ void SNES_SPC::end_frame( time_t end_time )
 #define SUSPICIOUS_OPCODE( name ) dprintf( "SPC: suspicious opcode: " name "\n" )
 
 #define CPU_READ( time, offset, addr )\
-	cpu_read( addr, time + offset )
+	cpu_read( addr, time/* + offset*/ )
 
 #define CPU_WRITE( time, offset, addr, data )\
-	cpu_write( data, addr, time + offset )
+	cpu_write( data, addr, time/* + offset*/ )
 
 #define READ(  time, addr )                 CPU_READ ( rel_time, time, (addr) )
 #define WRITE( time, addr, data )           CPU_WRITE( rel_time, time, (addr), (data) )
@@ -368,12 +368,12 @@ void SNES_SPC::end_frame( time_t end_time )
 
 #define PUSH( data )\
 {\
-	WRITE(0, --sp + 0x101, data); \
+	WRITE(0, sp-- + 0x100, data); \
 }
 
 #define POP( out )\
 {\
-	out = READ(0, sp++ + 0x101); \
+	out = READ(0, ++sp + 0x100); \
 }
 
 #define PUSHADDR16( data )\
