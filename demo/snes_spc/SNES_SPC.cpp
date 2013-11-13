@@ -112,8 +112,6 @@ inline void SNES_SPC::dsp_write( int data, rel_time_t time )
 
 //// Memory access extras
 
-#define MEM_ACCESS( time, addr )
-
 // divided into multiple functions to keep rarely-used functionality separate
 // so often-used functionality can be optimized better by compiler
 
@@ -221,8 +219,6 @@ int const bits_in_int = CHAR_BIT * sizeof (int);
 
 void SNES_SPC::cpu_write( int data, int addr, rel_time_t time )
 {
-	MEM_ACCESS( time, addr )
-	
 	// RAM
 	RAM [addr] = (uint8_t) data;
 	int reg = addr - 0xF0;
@@ -275,8 +271,6 @@ inline int SNES_SPC::cpu_read_smp_reg( int reg, rel_time_t time )
 
 int SNES_SPC::cpu_read( int addr, rel_time_t time )
 {
-	MEM_ACCESS( time, addr )
-	
 	// RAM
 	int result = RAM [addr];
 	int reg = addr - 0xF0;
