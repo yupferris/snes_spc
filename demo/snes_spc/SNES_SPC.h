@@ -167,8 +167,9 @@ private:
 	
 	bool check_echo_access ( int addr );
 
-	void run_until( time_t end_time );
 	uint8_t* run_until_( time_t end_time );
+
+	void run_until( time_t end_time, time_t& rel_time );
 
 	static char const signature [signature_size + 1];
 };
@@ -194,17 +195,5 @@ struct spc_file_t
 #include <assert.h>
 
 inline int SNES_SPC::sample_count() const { return (extra_clocks >> 5) * 2; }
-
-inline int SNES_SPC::read_port( time_t t, int port )
-{
-	assert( (unsigned) port < port_count );
-	return run_until_( t ) [port];
-}
-
-inline void SNES_SPC::write_port( time_t t, int port, int data )
-{
-	assert( (unsigned) port < port_count );
-	run_until_( t ) [0x10 + port] = data;
-}
 
 #endif

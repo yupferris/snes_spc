@@ -291,6 +291,18 @@ int SNES_SPC::cpu_read( int addr, rel_time_t time )
 	return result;
 }
 
+int SNES_SPC::read_port( time_t t, int port )
+{
+	assert( (unsigned) port < port_count );
+	return run_until_( t ) [port];
+}
+
+void SNES_SPC::write_port( time_t t, int port, int data )
+{
+	assert( (unsigned) port < port_count );
+	run_until_( t ) [0x10 + port] = data;
+}
+
 
 //// Run
 
@@ -324,11 +336,6 @@ void SNES_SPC::end_frame( time_t end_time )
 	// Save any extra samples beyond what should be generated
 	if ( buf_begin )
 		save_extra();
-}
-
-void SNES_SPC::run_until( time_t end_time )
-{
-
 }
 
 //// Memory access
@@ -435,6 +442,20 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 	timers [0].next_time += rel_time;
 	timers [1].next_time += rel_time;
 	timers [2].next_time += rel_time;
+
+	run_until( end_time, rel_time );
+
+	spc_time += rel_time;
+	dsp_time -= rel_time;
+	timers [0].next_time -= rel_time;
+	timers [1].next_time -= rel_time;
+	timers [2].next_time -= rel_time;
+	assert( spc_time <= end_time );
+	return &REGS [r_cpuio0];
+}
+
+void SNES_SPC::run_until( time_t end_time, time_t& rel_time )
+{
 {
 	uint8_t a = Regs.a;
 	uint8_t x = Regs.x;
@@ -1447,12 +1468,5 @@ stop:
 		Regs.psw = (uint8_t) temp;
 	}
 }
-	spc_time += rel_time;
-	dsp_time -= rel_time;
-	timers [0].next_time -= rel_time;
-	timers [1].next_time -= rel_time;
-	timers [2].next_time -= rel_time;
-	assert( spc_time <= end_time );
-	return &REGS [r_cpuio0];
 }
 
