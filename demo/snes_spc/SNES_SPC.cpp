@@ -349,7 +349,10 @@ void SNES_SPC::end_frame( time_t end_time )
 #define READ_PROG16( addr )                 GET_LE16( ram + (addr) )
 
 #define READ_PC()       READ( 0, pc )
-#define READ_PC16()     GET_LE16( ram + pc )
+#define READ_PC16( out )\
+{\
+	out = GET_LE16( ram + pc );\
+}
 
 #define PUSH( data )\
 {\
@@ -379,7 +382,8 @@ void SNES_SPC::end_frame( time_t end_time )
 
 unsigned SNES_SPC::CPU_mem_bit( uint16_t pc, rel_time_t rel_time )
 {
-	unsigned addr = READ_PC16();
+	unsigned addr;
+	READ_PC16( addr );
 	unsigned t = READ( 0, addr & 0x1FFF ) >> (addr >> 13);
 	return t << 8 & 0x100;
 }
@@ -488,7 +492,7 @@ loop:
 	
 	case 0x3F:{// CALL
 		int old_addr = pc + 2;
-		pc = READ_PC16();
+		READ_PC16( pc );
 		PUSHADDR16( old_addr );
 		goto loop;
 	}
@@ -618,7 +622,7 @@ loop:
 		goto inc_pc_loop;
 	
 	case 0xE9: // MOV X,abs
-		data = READ_PC16();
+		READ_PC16( data );
 		++pc;
 		data = READ( 0, data );
 	case 0xCD: // MOV X,imm
@@ -635,7 +639,8 @@ loop:
 		goto loop;
 	
 	case 0xEC:{// MOV Y,abs
-		int temp = READ_PC16();
+		int temp;
+		READ_PC16( temp );
 		pc += 2;
 		y = nz = READ( 0, temp );
 		//y = nz = READ( 0, temp );
@@ -660,8 +665,12 @@ loop:
 		goto mov_abs_temp;
 	case 0xC9: // MOV abs,X
 		temp = x;
-	mov_abs_temp:
-		WRITE( 0, READ_PC16(), temp );
+mov_abs_temp:
+		{
+			int temp2;
+			READ_PC16( temp2 );
+			WRITE( 0, temp2, temp );
+		}
 		pc += 2;
 		goto loop;
 	}
@@ -778,7 +787,7 @@ loop:
 		data += dp;
 		goto cmp_x_addr;
 	case 0x1E: // CMP X,abs
-		data = READ_PC16();
+		READ_PC16( data );
 		pc++;
 	cmp_x_addr:
 		data = READ( 0, data );
@@ -792,7 +801,7 @@ loop:
 		data += dp;
 		goto cmp_y_addr;
 	case 0x5E: // CMP Y,abs
-		data = READ_PC16();
+		READ_PC16( data );
 		pc++;
 	cmp_y_addr:
 		data = READ( 0, data );
@@ -878,7 +887,7 @@ loop:
 		goto inc_abs;
 	case 0x8C: // DEC abs
 	case 0xAC: // INC abs
-		data = READ_PC16();
+		READ_PC16( data );
 		pc++;
 	inc_abs:
 		nz = (opcode >> 4 & 2) - 1;
@@ -921,7 +930,7 @@ loop:
 	case 0x0C: // ASL abs
 		c = 0;
 	case 0x2C: // ROL abs
-		data = READ_PC16();
+		READ_PC16( data );
 		pc++;
 	rol_mem:
 		nz = c >> 8 & 1;
@@ -943,7 +952,7 @@ loop:
 	case 0x4C: // LSR abs
 		c = 0;
 	case 0x6C: // ROR abs
-		data = READ_PC16();
+		READ_PC16( data );
 		pc++;
 	ror_mem: {
 		int temp = READ( -1, data );
@@ -1178,10 +1187,11 @@ loop:
 		BRANCH( y )
 	
 	case 0x1F: // JMP [abs+X]
-		pc = READ_PC16() + x;
+		READ_PC16( pc );
+		pc += x;
 		// fall through
 	case 0x5F: // JMP abs
-		pc = READ_PC16();
+		READ_PC16( pc );
 		goto loop;
 	
 // 13. SUB-ROUTINE CALL RETURN COMMANDS
@@ -1307,7 +1317,7 @@ loop:
 		
 	case 0x0E: // TSET1 abs
 	case 0x4E: // TCLR1 abs
-		data = READ_PC16();
+		READ_PC16( data );
 		pc += 2;
 		{
 			unsigned temp = READ( -2, data );
@@ -1345,7 +1355,7 @@ loop:
 		goto loop;
 	
 	case 0xEA: // NOT1 mem.bit
-		data = READ_PC16();
+		READ_PC16( data );
 		pc += 2;
 		{
 			unsigned temp = READ( -1, data & 0x1FFF );
@@ -1355,7 +1365,7 @@ loop:
 		goto loop;
 	
 	case 0xCA: // MOV1 mem.bit,C
-		data = READ_PC16();
+		READ_PC16( data );
 		pc += 2;
 		{
 			unsigned temp = READ( -2, data & 0x1FFF );
