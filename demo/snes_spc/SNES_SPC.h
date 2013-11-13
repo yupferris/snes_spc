@@ -5,6 +5,7 @@
 #define SNES_SPC_H
 
 #include "SPC_DSP.h"
+#include "SnesSmp.h"
 #include "blargg_endian.h"
 
 class SNES_SPC {
@@ -95,6 +96,7 @@ public:
 	enum { signature_size = 35 };
 	
 private:
+	SnesSmp *smp;
 	SPC_DSP *dsp;
 
 	Timer timers [timer_count];
@@ -130,14 +132,8 @@ private:
 	uint8_t     hi_ram [rom_size];
 		
 	unsigned char cycle_table [256];
-		
-	// padding to neutralize address overflow
-	union {
-		uint8_t padding1 [0x100];
-		uint16_t align; // makes compiler align data for 16-bit access
-	} padding1 [1];
+	
 	uint8_t ram      [0x10000];
-	uint8_t padding2 [0x100];
 	
 	enum { rom_addr = 0xFFC0 };
 	

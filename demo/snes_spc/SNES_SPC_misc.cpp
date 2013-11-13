@@ -119,10 +119,6 @@ void SNES_SPC::ram_loaded()
 {
 	rom_enabled = 0;
 	load_regs( &ram [0xF0] );
-	
-	// Put STOP instruction around memory to catch PC underflow/overflow
-	memset( padding1, cpu_pad_fill, sizeof padding1 );
-	memset( padding2, cpu_pad_fill, sizeof padding2 );
 }
 
 void SNES_SPC::reset_time_regs()

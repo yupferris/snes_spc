@@ -19,6 +19,7 @@
       <Filter>snes_spc</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="..\snes_spc\SnesSmp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\snes_spc\blargg_common.h">
@@ -42,5 +43,6 @@
     <ClInclude Include="..\snes_spc\SPC_Filter.h">
       <Filter>snes_spc</Filter>
     </ClInclude>
+    <ClInclude Include="..\snes_spc\SnesSmp.h" />
   </ItemGroup>
 </Project>
