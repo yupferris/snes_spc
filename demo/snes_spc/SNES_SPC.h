@@ -183,7 +183,4 @@ struct spc_file_t
 
 inline int SNES_SPC::sample_count() const { return (extra_clocks >> 5) * 2; }
 
-// If write isn't preceded by read, data has this added to it
-int const no_read_before_write = 0x2000;
-
 #endif

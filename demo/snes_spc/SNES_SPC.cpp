@@ -115,6 +115,8 @@ inline void SNES_SPC::dsp_write( int data, rel_time_t time )
 // divided into multiple functions to keep rarely-used functionality separate
 // so often-used functionality can be optimized better by compiler
 
+int const no_read_before_write = 0x2000;
+
 void SNES_SPC::cpu_write_smp_reg_( int data, rel_time_t time, int addr )
 {
 	switch ( addr )

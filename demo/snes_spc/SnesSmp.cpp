@@ -55,6 +55,8 @@ void SnesSmp::LoadSpc(const spc_file_t *spc)
 
 //// Memory access
 
+int const no_read_before_write = 0x2000;
+
 #define SUSPICIOUS_OPCODE( name ) dprintf( "SPC: suspicious opcode: " name "\n" )
 
 #define CPU_READ( time, offset, addr )\
