@@ -348,14 +348,13 @@ void SNES_SPC::end_frame( time_t end_time )
 
 #define READ_PROG16( addr, out )\
 {\
-	out = GET_LE16( ram + (addr) );\
+	uint8_t low = READ( 0, addr );\
+	uint8_t high = READ( 0, addr + 1 );\
+	out = (high << 8) | low;\
 }
 
-#define READ_PC()       READ( 0, pc )
-#define READ_PC16( out )\
-{\
-	out = GET_LE16( ram + pc );\
-}
+#define READ_PC()           READ( 0, pc )
+#define READ_PC16( out )    READ_PROG16( pc, out );
 
 #define PUSH( data )\
 {\
