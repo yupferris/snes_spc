@@ -341,18 +341,6 @@ void SNES_SPC::end_frame( time_t end_time )
 		save_extra();
 }
 
-// snes_spc 0.9.0. http://www.slack.net/~ant/
-
-/* Copyright (C) 2004-2007 Shay Green. This module is free software; you
-can redistribute it and/or modify it under the terms of the GNU Lesser
-General Public License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version. This
-module is distributed in the hope that it will be useful, but WITHOUT ANY
-WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
-details. You should have received a copy of the GNU Lesser General Public
-License along with this module; if not, write to the Free Software Foundation,
-Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 //// Memory access
 
@@ -385,22 +373,32 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #define PUSH( data )\
 {\
-	WRITE(0, --sp - ram, data); \
-	if ( sp - ram == 0x100 )\
-		sp += 0x100;\
+	SET_SP(GET_SP() - 1); \
+	WRITE(0, GET_SP() + 0x101, data); \
+	if ( GET_SP() == -1 )\
+		SET_SP(GET_SP() + 0x100); \
 }
 
 #define POP( out )\
 {\
-	out = READ(0, sp++ - ram); \
-	if ( sp - ram == 0x201 )\
-		sp -= 0x100;\
+	out = READ(0, GET_SP() + 0x101); \
+	SET_SP(GET_SP() + 1); \
+	if ( GET_SP() == 0x100 )\
+		SET_SP(GET_SP() - 0x100); \
 }
 
-#define PUSH16( data )\
+#define PUSHADDR16( data )\
 {\
 	PUSH( data >> 8 ); \
 	PUSH( data ); \
+}
+
+#define POPADDR16( out ) \
+{\
+	uint8_t low, high; \
+	POP( low ); \
+	POP( high ); \
+	out = (high << 8) | low; \
 }
 
 #define MEM_BIT( rel ) CPU_mem_bit( pc, rel_time + rel )
@@ -521,7 +519,7 @@ loop:
 	case 0x3F:{// CALL
 		int old_addr = GET_PC() + 2;
 		SET_PC( READ_PC16( pc ) );
-		PUSH16( old_addr );
+		PUSHADDR16( old_addr );
 		goto loop;
 	}
 	
@@ -1223,7 +1221,7 @@ loop:
 		int ret_addr = GET_PC();
 		SUSPICIOUS_OPCODE( "BRK" );
 		SET_PC( READ_PROG16( 0xFFDE ) ); // vector address verified
-		PUSH16( ret_addr );
+		PUSHADDR16( ret_addr );
 		GET_PSW( temp );
 		psw = (psw | b10) & ~i04;
 		PUSH( temp );
@@ -1233,7 +1231,7 @@ loop:
 	case 0x4F:{// PCALL offset
 		int ret_addr = GET_PC() + 1;
 		SET_PC( 0xFF00 | data );
-		PUSH16( ret_addr );
+		PUSHADDR16( ret_addr );
 		goto loop;
 	}
 	
@@ -1255,7 +1253,7 @@ loop:
 	case 0xF1: {
 		int ret_addr = GET_PC();
 		SET_PC( READ_PROG16( 0xFFDE - (opcode >> 3) ) );
-		PUSH16( ret_addr );
+		PUSHADDR16( ret_addr );
 		goto loop;
 	}
 	
