@@ -168,9 +168,10 @@ private:
 
 public:
 	void cpu_write         ( int data, int addr );
+
+private:
 	int cpu_read           ( int addr );
 	
-private:
 	rel_time_t rel_time;
 
 	bool check_echo_access ( int addr );

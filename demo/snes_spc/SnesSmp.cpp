@@ -4,6 +4,7 @@
 #include <string.h>
 
 SnesSmp::SnesSmp(SNES_SPC *apu)
+	: SmpBase(apu)
 {
 	this->apu = apu;
 }
@@ -169,7 +170,7 @@ int const no_read_before_write = 0x2000;
 #define SUSPICIOUS_OPCODE( name ) dprintf( "SPC: suspicious opcode: " name "\n" )
 
 #define CPU_READ( time, offset, addr )\
-	apu->cpu_read( addr )
+	emulator->ReadByte( addr )
 
 #define CPU_WRITE( time, offset, addr, data )\
 	apu->cpu_write( data, addr )

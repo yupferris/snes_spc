@@ -9,7 +9,7 @@
 class SNES_SPC;
 struct spc_file_t;
 
-class SnesSmp// : public SnesApu::SmpBase
+class SnesSmp : public SnesApu::SmpBase
 {
 public:
 	SnesSmp(SNES_SPC *apu);
