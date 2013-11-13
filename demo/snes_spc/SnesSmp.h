@@ -2,7 +2,6 @@
 #define __SNES_SMP_H__
 
 #include <SnesApu.h>
-using namespace SnesApu;
 
 #include "blargg_common.h"
 #include "CommonTypes.h"
@@ -10,7 +9,7 @@ using namespace SnesApu;
 class SNES_SPC;
 struct spc_file_t;
 
-class SnesSmp// : public SmpBase
+class SnesSmp// : public SnesApu::SmpBase
 {
 public:
 	SnesSmp(SNES_SPC *apu);

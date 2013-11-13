@@ -9,10 +9,27 @@
 #include "blargg_endian.h"
 #include "CommonTypes.h"
 
-class SNES_SPC {
+#include <Fel.h>
+
+class SNES_SPC : public Fel::IEmulator8
+{
 public:
 	SNES_SPC();
 	~SNES_SPC();
+
+	// None of these do anything, but they're necessary to implement the IEmulator8 interface. Perhaps I should
+	// split that up into smaller ones..
+	virtual void Update();
+	virtual int GetOutputWidth() const;
+	virtual int GetOutputHeight() const;
+
+	virtual void SetVideoDriver(Fel::IVideoDriver *videoDriver);
+	virtual void SetAudioDriver(Fel::IAudioDriver *audioDriver);
+
+	// TODO: IMPLEMENT!!1
+	virtual void CpuCyclesCallback(int numCycles);
+	virtual unsigned char ReadByte(unsigned int address);
+	virtual void WriteByte(unsigned int address, unsigned char value);
 	
 	// Sample pairs generated per second
 	enum { sample_rate = 32000 };
@@ -33,7 +50,7 @@ public:
 
 	// Resets SPC to power-on state. This resets your output buffer, so you must
 	// call set_output() after this.
-	void reset();
+	virtual void Reset();
 
 	// Emulates pressing reset switch on SNES. This resets your output buffer, so
 	// you must call set_output() after this.

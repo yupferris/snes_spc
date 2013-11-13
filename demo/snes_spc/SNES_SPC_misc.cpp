@@ -38,13 +38,50 @@ SNES_SPC::SNES_SPC()
 	rom [0x3E] = 0xFF;
 	rom [0x3F] = 0xC0;
 	
-	reset();
+	Reset();
 }
 
 SNES_SPC::~SNES_SPC()
 {
 	delete smp;
 	delete dsp;
+}
+
+void SNES_SPC::Update()
+{
+}
+
+int SNES_SPC::GetOutputWidth() const
+{
+	return 0;
+}
+
+int SNES_SPC::GetOutputHeight() const
+{
+	return 0;
+}
+
+void SNES_SPC::SetVideoDriver(Fel::IVideoDriver *videoDriver)
+{
+}
+
+void SNES_SPC::SetAudioDriver(Fel::IAudioDriver *audioDriver)
+{
+}
+
+void SNES_SPC::CpuCyclesCallback(int numCycles)
+{
+	// TODO!!
+}
+
+unsigned char SNES_SPC::ReadByte(unsigned int address)
+{
+	return cpu_read(address, 0);
+}
+
+void SNES_SPC::WriteByte(unsigned int address, unsigned char value)
+{
+	cpu_write(value, address, 0);
 }
 
 void SNES_SPC::init_rom( uint8_t const in [rom_size] )
@@ -138,7 +175,7 @@ void SNES_SPC::soft_reset()
 	dsp->soft_reset();
 }
 
-void SNES_SPC::reset()
+void SNES_SPC::Reset()
 {
 	memset( ram, 0xFF, 0x10000 );
 	ram_loaded();
