@@ -196,23 +196,7 @@ void SNES_SPC::cpu_write_smp_reg( int data, rel_time_t time, int addr )
 	if ( addr == r_dspdata ) // 99%
 		dsp_write( data, time );
 	else
-		cpu_write_smp_reg_( data, time, addr );
-}
-
-void SNES_SPC::cpu_write_high( int data, int i, rel_time_t time )
-{
-	if ( i < rom_size )
-	{
-		hi_ram [i] = (uint8_t) data;
-		if ( rom_enabled )
-			RAM [i + rom_addr] = rom [i]; // restore overwritten ROM
-	}
-	else
-	{
-		assert( RAM [i + rom_addr] == (uint8_t) data );
-		RAM [i + rom_addr] = cpu_pad_fill; // restore overwritten padding
-		cpu_write( data, i + rom_addr - 0x10000, time );
-	}
+		cpu_write( data, time, addr );
 }
 
 int const bits_in_int = CHAR_BIT * sizeof (int);
@@ -229,13 +213,6 @@ void SNES_SPC::cpu_write( int data, int addr, rel_time_t time )
 		{
 			REGS [reg] = (uint8_t) data;
 			
-			// Ports
-			#ifdef SPC_PORT_WRITE_HOOK
-				if ( (unsigned) (reg - r_cpuio0) < port_count )
-					SPC_PORT_WRITE_HOOK( m.spc_time + time, (reg - r_cpuio0),
-							(uint8_t) data, &REGS [r_cpuio0] );
-			#endif
-			
 			// Registers other than $F2 and $F4-$F7
 			//if ( reg != 2 && reg != 4 && reg != 5 && reg != 6 && reg != 7 )
 			// TODO: this is a bit on the fragile side
@@ -247,27 +224,26 @@ void SNES_SPC::cpu_write( int data, int addr, rel_time_t time )
 		{
 			reg -= rom_addr - 0xF0;
 			if ( reg >= 0 ) // 1% in IPL ROM area or address wrapped around
-				cpu_write_high( data, reg, time );
+			{
+				if ( reg < rom_size )
+				{
+					hi_ram [reg] = (uint8_t) data;
+					if ( rom_enabled )
+						RAM [reg + rom_addr] = rom [reg]; // restore overwritten ROM
+				}
+				else
+				{
+					assert( RAM [reg + rom_addr] == (uint8_t) data );
+					RAM [reg + rom_addr] = cpu_pad_fill; // restore overwritten padding
+					cpu_write( data, reg + rom_addr - 0x10000, time );
+				}
+			}
 		}
 	}
 }
 
 
 //// CPU read
-
-inline int SNES_SPC::cpu_read_smp_reg( int reg, rel_time_t time )
-{
-	int result = REGS_IN [reg];
-	reg -= r_dspaddr;
-	// DSP addr and data
-	if ( (unsigned) reg <= 1 ) // 4% 0xF2 and 0xF3
-	{
-		result = REGS [r_dspaddr];
-		if ( (unsigned) reg == 1 )
-			result = dsp_read( time ); // 0xF3
-	}
-	return result;
-}
 
 int SNES_SPC::cpu_read( int addr, rel_time_t time )
 {
@@ -293,7 +269,16 @@ int SNES_SPC::cpu_read( int addr, rel_time_t time )
 			// Other registers
 			else if ( reg < 0 ) // 10%
 			{
-				result = cpu_read_smp_reg( reg + r_t0out, time );
+				reg += r_t0out;
+				result = REGS_IN [reg];
+				reg -= r_dspaddr;
+				// DSP addr and data
+				if ( (unsigned) reg <= 1 ) // 4% 0xF2 and 0xF3
+				{
+					result = REGS [r_dspaddr];
+					if ( (unsigned) reg == 1 )
+						result = dsp_read( time ); // 0xF3
+				}
 			}
 			else // 1%
 			{
