@@ -166,10 +166,7 @@ private:
 	void cpu_write_smp_reg_( int data, int addr );
 	void cpu_write_smp_reg ( int data, int addr );
 
-public:
-	void cpu_write         ( int data, int addr );
-
-private:
+	void cpu_write         ( uint8_t data, uint16_t addr );
 	int cpu_read           ( int addr );
 	
 	rel_time_t rel_time;

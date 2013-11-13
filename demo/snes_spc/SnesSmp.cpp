@@ -173,7 +173,7 @@ int const no_read_before_write = 0x2000;
 	emulator->ReadByte( addr )
 
 #define CPU_WRITE( time, offset, addr, data )\
-	apu->cpu_write( data, addr )
+	emulator->WriteByte( addr, data )
 
 #define READ(  time, addr )                 CPU_READ ( rel_time, time, (addr) )
 #define WRITE( time, addr, data )           CPU_WRITE( rel_time, time, (addr), (data) )

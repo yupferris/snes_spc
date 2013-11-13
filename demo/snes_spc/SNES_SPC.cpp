@@ -204,7 +204,7 @@ void SNES_SPC::cpu_write_smp_reg( int data, int addr )
 
 int const bits_in_int = CHAR_BIT * sizeof (int);
 
-void SNES_SPC::cpu_write( int data, int addr )
+void SNES_SPC::cpu_write( uint8_t data, uint16_t addr )
 {
 	rel_time_t time = rel_time;
 
