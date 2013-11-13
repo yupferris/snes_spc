@@ -1466,12 +1466,12 @@ stop:
 		cpu_regs.psw = (uint8_t) temp;
 	}
 }
-	spc_time += rel_time;\
-	dsp_time -= rel_time;\
-	timers [0].next_time -= rel_time;\
-	timers [1].next_time -= rel_time;\
-	timers [2].next_time -= rel_time;\
-	assert( spc_time <= end_time );\
-	return &REGS [r_cpuio0];\
+	spc_time += rel_time;
+	dsp_time -= rel_time;
+	timers [0].next_time -= rel_time;
+	timers [1].next_time -= rel_time;
+	timers [2].next_time -= rel_time;
+	assert( spc_time <= end_time );
+	return &REGS [r_cpuio0];
 }
 
