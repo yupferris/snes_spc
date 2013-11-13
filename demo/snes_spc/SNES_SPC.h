@@ -168,7 +168,7 @@ private:
 
 public:
 	void cpu_write         ( int data, int addr, rel_time_t );
-	int cpu_read           ( int addr, rel_time_t );
+	int cpu_read           ( int addr );
 	
 private:
 	rel_time_t rel_time;

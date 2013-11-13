@@ -76,7 +76,7 @@ void SNES_SPC::CpuCyclesCallback(int numCycles)
 
 unsigned char SNES_SPC::ReadByte(unsigned int address)
 {
-	return cpu_read(address, 0);
+	return cpu_read(address);
 }
 
 void SNES_SPC::WriteByte(unsigned int address, unsigned char value)

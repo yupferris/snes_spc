@@ -244,8 +244,9 @@ void SNES_SPC::cpu_write( int data, int addr, rel_time_t time )
 
 //// CPU read
 
-int SNES_SPC::cpu_read( int addr, rel_time_t time )
+int SNES_SPC::cpu_read( int addr )
 {
+	rel_time_t time = rel_time;
 	// RAM
 	int result = RAM [addr];
 	int reg = addr - 0xF0;
@@ -282,7 +283,7 @@ int SNES_SPC::cpu_read( int addr, rel_time_t time )
 			else // 1%
 			{
 				assert( reg + (r_t0out + 0xF0 - 0x10000) < 0x100 );
-				result = cpu_read( reg + (r_t0out + 0xF0 - 0x10000), time );
+				result = cpu_read( reg + (r_t0out + 0xF0 - 0x10000) );
 			}
 		}
 	}
