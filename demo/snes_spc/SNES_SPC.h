@@ -163,11 +163,11 @@ private:
 	Timer* run_timer       ( Timer* t, rel_time_t );
 	int dsp_read           ( rel_time_t );
 	void dsp_write         ( int data, rel_time_t );
-	void cpu_write_smp_reg_( int data, rel_time_t, int addr );
-	void cpu_write_smp_reg ( int data, rel_time_t, int addr );
+	void cpu_write_smp_reg_( int data, int addr );
+	void cpu_write_smp_reg ( int data, int addr );
 
 public:
-	void cpu_write         ( int data, int addr, rel_time_t );
+	void cpu_write         ( int data, int addr );
 	int cpu_read           ( int addr );
 	
 private:

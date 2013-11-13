@@ -117,8 +117,10 @@ inline void SNES_SPC::dsp_write( int data, rel_time_t time )
 
 int const no_read_before_write = 0x2000;
 
-void SNES_SPC::cpu_write_smp_reg_( int data, rel_time_t time, int addr )
+void SNES_SPC::cpu_write_smp_reg_( int data, int addr )
 {
+	rel_time_t time = rel_time;
+
 	switch ( addr )
 	{
 	case r_t0target:
@@ -190,18 +192,22 @@ void SNES_SPC::cpu_write_smp_reg_( int data, rel_time_t time, int addr )
 	}
 }
 
-void SNES_SPC::cpu_write_smp_reg( int data, rel_time_t time, int addr )
+void SNES_SPC::cpu_write_smp_reg( int data, int addr )
 {
+	rel_time_t time = rel_time;
+
 	if ( addr == r_dspdata ) // 99%
 		dsp_write( data, time );
 	else
-		cpu_write( data, time, addr );
+		cpu_write( data, time );
 }
 
 int const bits_in_int = CHAR_BIT * sizeof (int);
 
-void SNES_SPC::cpu_write( int data, int addr, rel_time_t time )
+void SNES_SPC::cpu_write( int data, int addr )
 {
+	rel_time_t time = rel_time;
+
 	// RAM
 	RAM [addr] = (uint8_t) data;
 	int reg = addr - 0xF0;
@@ -216,7 +222,7 @@ void SNES_SPC::cpu_write( int data, int addr, rel_time_t time )
 			//if ( reg != 2 && reg != 4 && reg != 5 && reg != 6 && reg != 7 )
 			// TODO: this is a bit on the fragile side
 			if ( ((~0x2F00 << (bits_in_int - 16)) << reg) < 0 ) // 36%
-				cpu_write_smp_reg( data, time, reg );
+				cpu_write_smp_reg( data, reg );
 		}
 		// High mem/address wrap-around
 		else
@@ -234,7 +240,7 @@ void SNES_SPC::cpu_write( int data, int addr, rel_time_t time )
 				{
 					assert( RAM [reg + rom_addr] == (uint8_t) data );
 					RAM [reg + rom_addr] = cpu_pad_fill; // restore overwritten padding
-					cpu_write( data, reg + rom_addr - 0x10000, time );
+					cpu_write( data, reg + rom_addr - 0x10000 );
 				}
 			}
 		}

@@ -81,7 +81,7 @@ unsigned char SNES_SPC::ReadByte(unsigned int address)
 
 void SNES_SPC::WriteByte(unsigned int address, unsigned char value)
 {
-	cpu_write(value, address, 0);
+	cpu_write(value, address);
 }
 
 void SNES_SPC::init_rom( uint8_t const in [rom_size] )
