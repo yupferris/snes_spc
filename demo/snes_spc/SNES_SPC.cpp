@@ -347,7 +347,7 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 	timers [1].next_time += rel_time;
 	timers [2].next_time += rel_time;
 
-	smp->run_until( end_time, rel_time );
+	smp->run_until( rel_time );
 
 	spc_time += rel_time;
 	dsp_time -= rel_time;

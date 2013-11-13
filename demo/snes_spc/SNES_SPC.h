@@ -170,7 +170,6 @@ public:
 	void cpu_write         ( int data, int addr, rel_time_t );
 	int cpu_read           ( int addr, rel_time_t );
 	
-private:
 	bool check_echo_access ( int addr );
 
 	uint8_t* run_until_( time_t end_time );

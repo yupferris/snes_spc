@@ -246,7 +246,7 @@ unsigned SnesSmp::CPU_mem_bit( uint16_t pc, rel_time_t rel_time )
 	nz  = (in << 4 & 0x800) | (~in & z02);\
 }
 
-void SnesSmp::run_until( time_t end_time, rel_time_t& rel_time )
+void SnesSmp::run_until( rel_time_t& rel_time )
 {
 {
 	uint8_t a = regs.a;

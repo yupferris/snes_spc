@@ -42,7 +42,7 @@ public:
 	virtual bool GetPswV() const;
 	virtual bool GetPswN() const;
 
-	void run_until( time_t end_time, rel_time_t& rel_time );
+	void run_until( rel_time_t& rel_time );
 
 private:
 	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
