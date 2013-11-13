@@ -102,8 +102,10 @@ private:
 		
 	int         skipped_kon;
 	int         skipped_koff;
+public:
 	const char* cpu_error;
-		
+	
+private:
 	int         extra_clocks;
 	sample_t*   buf_begin;
 	sample_t const* buf_end;
@@ -113,8 +115,6 @@ private:
 	int         rom_enabled;
 	uint8_t     rom    [rom_size];
 	uint8_t     hi_ram [rom_size];
-		
-	unsigned char cycle_table [256];
 	
 	uint8_t ram      [0x10000];
 	
@@ -148,15 +148,15 @@ private:
 	void dsp_write         ( int data, rel_time_t );
 	void cpu_write_smp_reg_( int data, rel_time_t, int addr );
 	void cpu_write_smp_reg ( int data, rel_time_t, int addr );
+
+public:
 	void cpu_write         ( int data, int addr, rel_time_t );
 	int cpu_read           ( int addr, rel_time_t );
 	
+private:
 	bool check_echo_access ( int addr );
 
 	uint8_t* run_until_( time_t end_time );
-
-	void run_until( time_t end_time, time_t& rel_time );
-	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
 
 	static char const signature [signature_size + 1];
 };
@@ -182,5 +182,8 @@ struct spc_file_t
 #include <assert.h>
 
 inline int SNES_SPC::sample_count() const { return (extra_clocks >> 5) * 2; }
+
+// If write isn't preceded by read, data has this added to it
+int const no_read_before_write = 0x2000;
 
 #endif

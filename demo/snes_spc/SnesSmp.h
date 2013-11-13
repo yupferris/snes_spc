@@ -10,11 +10,6 @@ struct spc_file_t;
 class SnesSmp
 {
 public:
-	SnesSmp(SNES_SPC *apu);
-
-	void Reset();
-	void LoadSpc(const spc_file_t *spc);
-
 	struct
 	{
 		uint16_t pc;
@@ -25,7 +20,17 @@ public:
 		uint8_t sp;
 	} Regs;
 
+	SnesSmp(SNES_SPC *apu);
+
+	void Reset();
+	void LoadSpc(const spc_file_t *spc);
+
+	void run_until( time_t end_time, rel_time_t& rel_time );
+	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
+
 private:
+	unsigned char cycle_table [256];
+
 	SNES_SPC *apu;
 };
 
