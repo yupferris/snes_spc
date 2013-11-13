@@ -4,6 +4,8 @@
 
 #include "SNES_SPC.h"
 
+#include "SnesSmp.h"
+
 #include <string.h>
 
 /* Copyright (C) 2004-2007 Shay Green. This module is free software; you

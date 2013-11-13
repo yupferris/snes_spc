@@ -5,11 +5,10 @@
 #define SNES_SPC_H
 
 #include "SPC_DSP.h"
-#include "SnesSmp.h"
 #include "blargg_endian.h"
 #include "CommonTypes.h"
 
-#include <Fel.h>
+#include <SnesApu.h>
 
 class SNES_SPC : public Fel::IEmulator8
 {
@@ -106,7 +105,7 @@ public:
 	enum { rom_addr = 0xFFC0 };
 	
 private:
-	SnesSmp *smp;
+	SnesApu::SmpBase *smp;
 	SPC_DSP *dsp;
 
 	Timer timers [timer_count];
