@@ -370,21 +370,12 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 #define CPU_WRITE( time, offset, addr, data )\
 	cpu_write( data, addr, time + offset )
 
-// timers are by far the most common thing read from dp
-#define CPU_READ_TIMER( time, offset, addr, out )\
-{\
-	out = CPU_READ( time, offset, addr ); \
-}
-
-#define TIME_ADJ( n )   (n)
-
-#define READ_TIMER( time, addr, out )       CPU_READ_TIMER( rel_time, TIME_ADJ(time), (addr), out )
-#define READ(  time, addr )                 CPU_READ ( rel_time, TIME_ADJ(time), (addr) )
-#define WRITE( time, addr, data )           CPU_WRITE( rel_time, TIME_ADJ(time), (addr), (data) )
+#define READ(  time, addr )                 CPU_READ ( rel_time, time, (addr) )
+#define WRITE( time, addr, data )           CPU_WRITE( rel_time, time, (addr), (data) )
 
 #define DP_ADDR( addr )                     (dp + (addr))
 
-#define READ_DP_TIMER(  time, addr, out )   CPU_READ_TIMER( rel_time, TIME_ADJ(time), DP_ADDR( addr ), out )
+#define READ_DP_TIMER(  time, addr, out )   { out = CPU_READ( rel_time, time, DP_ADDR( addr ) ); }
 #define READ_DP(  time, addr )              READ ( time, DP_ADDR( addr ) )
 #define WRITE_DP( time, addr, data )        WRITE( time, DP_ADDR( addr ), data )
 
@@ -398,36 +389,24 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 #define SET_SP( v )     (sp = ram + 0x101 + (v))
 #define GET_SP()        (sp - 0x101 - ram)
 
-#define PUSH16( data )\
-{\
-	int addr = (sp -= 2) - ram;\
-	if ( addr > 0x100 )\
-	{\
-		SET_LE16( sp, data );\
-	}\
-	else\
-	{\
-		ram [(uint8_t) addr + 0x100] = (uint8_t) data;\
-		sp [1] = (uint8_t) (data >> 8);\
-		sp += 0x100;\
-	}\
-}
-
 #define PUSH( data )\
 {\
-	*--sp = (uint8_t) (data);\
+	WRITE(0, --sp - ram, data); \
 	if ( sp - ram == 0x100 )\
 		sp += 0x100;\
 }
 
 #define POP( out )\
 {\
-	out = *sp++;\
+	out = READ(0, sp++ - ram); \
 	if ( sp - ram == 0x201 )\
-	{\
-		out = sp [-0x101];\
 		sp -= 0x100;\
-	}\
+}
+
+#define PUSH16( data )\
+{\
+	PUSH( data >> 8 ); \
+	PUSH( data ); \
 }
 
 #define MEM_BIT( rel ) CPU_mem_bit( pc, rel_time + rel )
@@ -499,6 +478,7 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 	
 	
 	// Main loop
+	unsigned opcode;
 	
 cbranch_taken_loop:
 	pc += *(BOOST::int8_t const*) pc;
@@ -506,7 +486,6 @@ inc_pc_loop:
 	pc++;
 loop:
 {
-	unsigned opcode;
 	unsigned data;
 	
 	check( (unsigned) a < 0x100 );
@@ -699,7 +678,7 @@ loop:
 	case 0xEC:{// MOV Y,abs
 		int temp = READ_PC16( pc );
 		pc += 2;
-		READ_TIMER( 0, temp, y = nz );
+		y = nz = READ( 0, temp );
 		//y = nz = READ( 0, temp );
 		goto loop;
 	}
@@ -1489,7 +1468,7 @@ loop:
 	assert( 0 );
 }   
 out_of_time:
-	rel_time -= cycle_table [*pc]; // undo partial execution of opcode
+	rel_time -= cycle_table [opcode]; // undo partial execution of opcode
 stop:
 	
 	// Uncache registers
