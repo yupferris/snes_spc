@@ -346,7 +346,10 @@ void SNES_SPC::end_frame( time_t end_time )
 #define READ_DP(  time, addr )              READ ( time, DP_ADDR( addr ) )
 #define WRITE_DP( time, addr, data )        WRITE( time, DP_ADDR( addr ), data )
 
-#define READ_PROG16( addr )                 GET_LE16( ram + (addr) )
+#define READ_PROG16( addr, out )\
+{\
+	out = GET_LE16( ram + (addr) );\
+}
 
 #define READ_PC()       READ( 0, pc )
 #define READ_PC16( out )\
@@ -568,10 +571,11 @@ loop:
 		pc--;\
 		goto end_##op;\
 	CASE( op + 0x0F ) /* (dp)+Y */\
-		data = READ_PROG16( data + dp ) + y;\
+		READ_PROG16( data + dp, data );\
+		data += y;\
 		goto end_##op;\
 	CASE( op - 0x01 ) /* (dp+X) */\
-		data = READ_PROG16( ((uint8_t) (data + x)) + dp );\
+		READ_PROG16( ((uint8_t) (data + x)) + dp, data );\
 		goto end_##op;\
 	CASE( op + 0x0E ) /* abs+Y */\
 		data += y;\
@@ -1200,7 +1204,7 @@ mov_abs_temp:
 		int temp;
 		int ret_addr = pc;
 		SUSPICIOUS_OPCODE( "BRK" );
-		pc = READ_PROG16( 0xFFDE ); // vector address verified
+		READ_PROG16( 0xFFDE, pc ); // vector address verified
 		PUSHADDR16( ret_addr );
 		GET_PSW( temp );
 		psw = (psw | b10) & ~i04;
@@ -1232,7 +1236,7 @@ mov_abs_temp:
 	case 0xE1:
 	case 0xF1: {
 		int ret_addr = pc;
-		pc = READ_PROG16( 0xFFDE - (opcode >> 3) );
+		READ_PROG16( 0xFFDE - (opcode >> 3), pc );
 		PUSHADDR16( ret_addr );
 		goto loop;
 	}
