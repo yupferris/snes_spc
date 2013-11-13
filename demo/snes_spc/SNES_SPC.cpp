@@ -432,9 +432,9 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 	timers [1].next_time += rel_time;
 	timers [2].next_time += rel_time;
 {
-	int a = Regs.a;
-	int x = Regs.x;
-	int y = Regs.y;
+	uint8_t a = Regs.a;
+	uint8_t x = Regs.x;
+	uint8_t y = Regs.y;
 	uint16_t pc;
 	uint8_t sp;
 	int psw;
@@ -526,17 +526,7 @@ loop:
 		
 		{
 			int i = dp + temp;
-			ram [i] = (uint8_t) data;
-			i -= 0xF0;
-			if ( (unsigned) i < 0x10 ) // 76%
-			{
-				REGS [i] = (uint8_t) data;
-				
-				// Registers other than $F2 and $F4-$F7
-				//if ( i != 2 && i != 4 && i != 5 && i != 6 && i != 7 )
-				if ( ((~0x2F00 << (bits_in_int - 16)) << i) < 0 ) // 12%
-					cpu_write_smp_reg( data, rel_time, i );
-			}
+			WRITE( 0, i, (uint8_t) data );
 		}
 		goto loop;
 	}
@@ -545,18 +535,7 @@ loop:
 		++pc;
 		{
 			int i = dp + data;
-			ram [i] = (uint8_t) a;
-			i -= 0xF0;
-			if ( (unsigned) i < 0x10 ) // 39%
-			{
-				unsigned sel = i - 2;
-				REGS [i] = (uint8_t) a;
-				
-				if ( sel == 1 ) // 51% $F3
-					dsp_write( a, rel_time );
-				else if ( sel > 1 ) // 1% not $F2 or $F3
-					cpu_write_smp_reg_( a, rel_time, i );
-			}
+			WRITE( 0, i, a );
 		}
 		goto loop;
 	
