@@ -278,9 +278,22 @@ inc_pc_loop:
 	pc++;
 loop:
 {
+	// Uncache registers
+	regs.pc = (uint16_t) pc;
+	regs.sp = ( uint8_t) sp;
+	regs.a  = ( uint8_t) a;
+	regs.x  = ( uint8_t) x;
+	regs.y  = ( uint8_t) y;
+	{
+		int temp;
+		GET_PSW( temp );
+		regs.psw = (uint8_t) temp;
+	}
+
 	unsigned data;
 	
 	opcode = READ_PC();
+	invokeHook(opcode);
 	CYCLES( cycle_table [opcode] );
 	if ( targetCycles < 0 )
 		goto out_of_time;
@@ -1246,8 +1259,6 @@ out_of_time:
 stop:
 	
 	// Uncache registers
-	if ( pc >= 0x10000 )
-		dprintf( "SPC: PC wrapped around\n" );
 	regs.pc = (uint16_t) pc;
 	regs.sp = ( uint8_t) sp;
 	regs.a  = ( uint8_t) a;
