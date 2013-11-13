@@ -43,11 +43,6 @@ void SnesSmp::Reset()
 	}
 }
 
-int SnesSmp::Run(int targetCycles)
-{
-	throw FSL_EXCEPTION("asdfasdfasdf");
-}
-
 void SnesSmp::SetRegPc(unsigned short value)
 {
 	regs.pc = value;
@@ -217,9 +212,9 @@ int const no_read_before_write = 0x2000;
 	out = (high << 8) | low; \
 }
 
-#define MEM_BIT( rel ) CPU_mem_bit( pc, rel_time + rel )
+#define MEM_BIT( rel ) CPU_mem_bit( pc )
 
-unsigned SnesSmp::CPU_mem_bit( uint16_t pc, rel_time_t rel_time )
+unsigned SnesSmp::CPU_mem_bit( uint16_t pc )
 {
 	unsigned addr;
 	READ_PC16( addr );
@@ -246,7 +241,15 @@ unsigned SnesSmp::CPU_mem_bit( uint16_t pc, rel_time_t rel_time )
 	nz  = (in << 4 & 0x800) | (~in & z02);\
 }
 
-void SnesSmp::run_until( rel_time_t& rel_time )
+//// LAWL
+
+#define CYCLES( count )\
+{\
+	emulator->CpuCyclesCallback( count );\
+	targetCycles -= (count);\
+}
+
+int SnesSmp::Run(int targetCycles)
 {
 {
 	uint8_t a = regs.a;
@@ -278,7 +281,8 @@ loop:
 	unsigned data;
 	
 	opcode = READ_PC();
-	if ( (rel_time += cycle_table [opcode]) > 0 )
+	CYCLES( cycle_table [opcode] );
+	if ( targetCycles < 0 )
 		goto out_of_time;
 	
 	pc++;
@@ -295,7 +299,7 @@ loop:
 	if ( cond )\
 		goto loop;\
 	pc -= (BOOST::int8_t) data;\
-	rel_time -= 2;\
+	CYCLES( -2 );\
 	goto loop;\
 }
 
@@ -937,7 +941,7 @@ mov_abs_temp:
 		pc++;\
 		if ( cond )\
 			goto cbranch_taken_loop;\
-		rel_time -= 2;\
+		CYCLES( -2 );\
 		goto inc_pc_loop;\
 	}
 	
@@ -1231,7 +1235,6 @@ mov_abs_temp:
 	case 0xEF: // SLEEP
 		SUSPICIOUS_OPCODE( "STOP/SLEEP" );
 		--pc;
-		rel_time = 0;
 		throw FSL_EXCEPTION("stop/sleep was hit");
 		goto stop;
 	} // switch
@@ -1239,7 +1242,7 @@ mov_abs_temp:
 	assert( 0 );
 }   
 out_of_time:
-	rel_time -= cycle_table [opcode]; // undo partial execution of opcode
+	CYCLES( -cycle_table [opcode] ); // undo partial execution of opcode
 stop:
 	
 	// Uncache registers
@@ -1256,4 +1259,6 @@ stop:
 		regs.psw = (uint8_t) temp;
 	}
 }
+
+return targetCycles;
 }

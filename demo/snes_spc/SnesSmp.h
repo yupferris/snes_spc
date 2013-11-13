@@ -42,10 +42,8 @@ public:
 	virtual bool GetPswV() const;
 	virtual bool GetPswN() const;
 
-	void run_until( rel_time_t& rel_time );
-
 private:
-	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
+	unsigned CPU_mem_bit   ( uint16_t pc );
 
 	unsigned char cycle_table [256];
 
