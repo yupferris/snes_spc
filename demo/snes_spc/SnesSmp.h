@@ -13,16 +13,6 @@ struct spc_file_t;
 class SnesSmp// : public SmpBase
 {
 public:
-	struct
-	{
-		uint16_t pc;
-		uint8_t a;
-		uint8_t x;
-		uint8_t y;
-		uint8_t psw;
-		uint8_t sp;
-	} Regs;
-
 	SnesSmp(SNES_SPC *apu);
 
 	virtual void Reset();
@@ -61,6 +51,16 @@ private:
 	unsigned char cycle_table [256];
 
 	SNES_SPC *apu;
+
+	struct
+	{
+		uint16_t pc;
+		uint8_t a;
+		uint8_t x;
+		uint8_t y;
+		uint8_t psw;
+		uint8_t sp;
+	} regs;
 };
 
 #endif

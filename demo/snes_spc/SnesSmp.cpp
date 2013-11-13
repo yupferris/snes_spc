@@ -11,8 +11,8 @@ SnesSmp::SnesSmp(SNES_SPC *apu)
 void SnesSmp::Reset()
 {
 	// Run IPL ROM
-	memset( &Regs, 0, sizeof Regs );
-	Regs.pc = SNES_SPC::rom_addr;
+	memset( &regs, 0, sizeof regs );
+	regs.pc = SNES_SPC::rom_addr;
 
 	static unsigned char const cycle_table [128] =
 	{//   01   23   45   67   89   AB   CD   EF
@@ -50,68 +50,68 @@ int SnesSmp::Run(int targetCycles)
 
 void SnesSmp::SetRegPc(unsigned short value)
 {
-	Regs.pc = value;
+	regs.pc = value;
 }
 
 void SnesSmp::SetRegA(unsigned char value)
 {
-	Regs.a = value;
+	regs.a = value;
 }
 
 void SnesSmp::SetRegX(unsigned char value)
 {
-	Regs.x = value;
+	regs.x = value;
 }
 
 void SnesSmp::SetRegY(unsigned char value)
 {
-	Regs.y = value;
+	regs.y = value;
 }
 
 void SnesSmp::SetRegSp(unsigned char value)
 {
-	Regs.sp = value;
+	regs.sp = value;
 }
 
 void SnesSmp::SetRegYa(unsigned short value)
 {
-	Regs.a = value & 0xff;
-	Regs.y = (value >> 8) & 0xff;
+	regs.a = value & 0xff;
+	regs.y = (value >> 8) & 0xff;
 }
 
 unsigned short SnesSmp::GetRegPc() const
 {
-	return Regs.pc;
+	return regs.pc;
 }
 
 unsigned char SnesSmp::GetRegA() const
 {
-	return Regs.a;
+	return regs.a;
 }
 
 unsigned char SnesSmp::GetRegX() const
 {
-	return Regs.x;
+	return regs.x;
 }
 
 unsigned char SnesSmp::GetRegY() const
 {
-	return Regs.y;
+	return regs.y;
 }
 
 unsigned char SnesSmp::GetRegSp() const
 {
-	return Regs.sp;
+	return regs.sp;
 }
 
 unsigned short SnesSmp::GetRegYa() const
 {
-	return (Regs.y << 8) | Regs.a;
+	return (regs.y << 8) | regs.a;
 }
 
 void SnesSmp::SetPsw(unsigned char value)
 {
-	Regs.psw = value;
+	regs.psw = value;
 }
 
 // Hex value in name to clarify code and bit shifting.
@@ -129,37 +129,37 @@ int const nz_neg_mask = 0x880; // either bit set indicates N flag set
 
 unsigned char SnesSmp::GetPsw() const
 {
-	return Regs.psw;
+	return regs.psw;
 }
 
 bool SnesSmp::GetPswC() const
 {
-	return (Regs.psw & c01) != 0;
+	return (regs.psw & c01) != 0;
 }
 
 bool SnesSmp::GetPswZ() const
 {
-	return (Regs.psw & z02) != 0;
+	return (regs.psw & z02) != 0;
 }
 
 bool SnesSmp::GetPswH() const
 {
-	return (Regs.psw & h08) != 0;
+	return (regs.psw & h08) != 0;
 }
 
 bool SnesSmp::GetPswP() const
 {
-	return (Regs.psw & p20) != 0;
+	return (regs.psw & p20) != 0;
 }
 
 bool SnesSmp::GetPswV() const
 {
-	return (Regs.psw & v40) != 0;
+	return (regs.psw & v40) != 0;
 }
 
 bool SnesSmp::GetPswN() const
 {
-	return (Regs.psw & n80) != 0;
+	return (regs.psw & n80) != 0;
 }
 
 //// Memory access
@@ -249,9 +249,9 @@ unsigned SnesSmp::CPU_mem_bit( uint16_t pc, rel_time_t rel_time )
 void SnesSmp::run_until( time_t end_time, rel_time_t& rel_time )
 {
 {
-	uint8_t a = Regs.a;
-	uint8_t x = Regs.x;
-	uint8_t y = Regs.y;
+	uint8_t a = regs.a;
+	uint8_t x = regs.x;
+	uint8_t y = regs.y;
 	uint16_t pc;
 	uint8_t sp;
 	int psw;
@@ -259,9 +259,9 @@ void SnesSmp::run_until( time_t end_time, rel_time_t& rel_time )
 	int nz;
 	int dp;
 	
-	pc = Regs.pc;
-	sp = Regs.sp;
-	SET_PSW( Regs.psw );
+	pc = regs.pc;
+	sp = regs.sp;
+	SET_PSW( regs.psw );
 	
 	goto loop;
 	
@@ -1245,15 +1245,15 @@ stop:
 	// Uncache registers
 	if ( pc >= 0x10000 )
 		dprintf( "SPC: PC wrapped around\n" );
-	Regs.pc = (uint16_t) pc;
-	Regs.sp = ( uint8_t) sp;
-	Regs.a  = ( uint8_t) a;
-	Regs.x  = ( uint8_t) x;
-	Regs.y  = ( uint8_t) y;
+	regs.pc = (uint16_t) pc;
+	regs.sp = ( uint8_t) sp;
+	regs.a  = ( uint8_t) a;
+	regs.x  = ( uint8_t) x;
+	regs.y  = ( uint8_t) y;
 	{
 		int temp;
 		GET_PSW( temp );
-		Regs.psw = (uint8_t) temp;
+		regs.psw = (uint8_t) temp;
 	}
 }
 }
