@@ -105,12 +105,12 @@ private:
 		
 	struct
 	{
-		int pc;
-		int a;
-		int x;
-		int y;
-		int psw;
-		int sp;
+		uint16_t pc;
+		uint8_t a;
+		uint8_t x;
+		uint8_t y;
+		uint8_t psw;
+		uint8_t sp;
 	} cpu_regs;
 		
 	rel_time_t  dsp_time;

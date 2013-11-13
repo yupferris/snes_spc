@@ -30,6 +30,7 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 SNES_SPC::SNES_SPC()
 {
+	smp = new SnesSmp(this);
 	dsp = new SPC_DSP( ram );
 	
 	// Most SPC music doesn't need ROM, and almost all the rest only rely
@@ -70,6 +71,7 @@ SNES_SPC::SNES_SPC()
 
 SNES_SPC::~SNES_SPC()
 {
+	delete smp;
 	delete dsp;
 }
 
