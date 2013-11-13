@@ -44,6 +44,8 @@
       <Filter>snes_spc</Filter>
     </ClInclude>
     <ClInclude Include="..\snes_spc\SnesSmp.h" />
-    <ClInclude Include="..\snes_spc\CommonTypes.h" />
+    <ClInclude Include="..\snes_spc\CommonTypes.h">
+      <Filter>snes_spc</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
