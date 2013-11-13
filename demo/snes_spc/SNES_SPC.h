@@ -14,7 +14,7 @@ typedef int rel_time_t;
 
 class SNES_SPC {
 public:
-SNES_SPC();
+	SNES_SPC();
 	~SNES_SPC();
 	
 	// Sample pairs generated per second
@@ -163,13 +163,13 @@ private:
 	void cpu_write_smp_reg ( int data, rel_time_t, int addr );
 	void cpu_write         ( int data, int addr, rel_time_t );
 	int cpu_read           ( int addr, rel_time_t );
-	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
 	
 	bool check_echo_access ( int addr );
 
 	uint8_t* run_until_( time_t end_time );
 
 	void run_until( time_t end_time, time_t& rel_time );
+	unsigned CPU_mem_bit   ( uint16_t pc, rel_time_t );
 
 	static char const signature [signature_size + 1];
 };

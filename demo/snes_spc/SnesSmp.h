@@ -4,11 +4,15 @@
 #include "blargg_common.h"
 
 class SNES_SPC;
+struct spc_file_t;
 
 class SnesSmp
 {
 public:
 	SnesSmp(SNES_SPC *apu);
+
+	void Reset();
+	void LoadSpc(const spc_file_t *spc);
 
 private:
 	SNES_SPC *apu;
