@@ -368,23 +368,14 @@ void SNES_SPC::end_frame( time_t end_time )
 #define READ_PC( pc )   (*(pc))
 #define READ_PC16( pc ) GET_LE16( pc )
 
-#define SET_SP( v )     (sp = ram + 0x101 + (v))
-#define GET_SP()        (sp - 0x101 - ram)
-
 #define PUSH( data )\
 {\
-	SET_SP(GET_SP() - 1); \
-	WRITE(0, GET_SP() + 0x101, data); \
-	if ( GET_SP() == -1 )\
-		SET_SP(GET_SP() + 0x100); \
+	WRITE(0, --sp + 0x101, data); \
 }
 
 #define POP( out )\
 {\
-	out = READ(0, GET_SP() + 0x101); \
-	SET_SP(GET_SP() + 1); \
-	if ( GET_SP() == 0x100 )\
-		SET_SP(GET_SP() - 0x100); \
+	out = READ(0, sp++ + 0x101); \
 }
 
 #define PUSHADDR16( data )\
@@ -456,14 +447,14 @@ BOOST::uint8_t* SNES_SPC::run_until_( time_t end_time )
 	int x = cpu_regs.x;
 	int y = cpu_regs.y;
 	uint8_t const* pc;
-	uint8_t* sp;
+	uint8_t sp;
 	int psw;
 	int c;
 	int nz;
 	int dp;
 	
 	SET_PC( cpu_regs.pc );
-	SET_SP( cpu_regs.sp );
+	sp = cpu_regs.sp;
 	SET_PSW( cpu_regs.psw );
 	
 	goto loop;
@@ -525,14 +516,9 @@ loop:
 	
 	case 0x6F:// RET
 		{
-			int addr = sp - ram;
-			SET_PC( GET_LE16( sp ) );
-			sp += 2;
-			if ( addr < 0x1FF )
-				goto loop;
-			
-			SET_PC( sp [-0x101] * 0x100 + ram [(uint8_t) addr + 0x100] );
-			sp -= 0x100;
+			int addr;
+			POPADDR16( addr );
+			SET_PC( addr );
 		}
 		goto loop;
 	
@@ -734,11 +720,11 @@ loop:
 		goto loop;
 	
 	case 0x9D: // MOV X,SP
-		x = nz = GET_SP();
+		x = nz = sp;
 		goto loop;
 	
 	case 0xBD: // MOV SP,X
-		SET_SP( x );
+		sp = x;
 		goto loop;
 	
 	//case 0xC6: // MOV (X),A (handled by MOV addr,A in group 2)
@@ -1262,13 +1248,17 @@ loop:
 	{
 		int temp;
 	case 0x7F: // RET1
-		temp = *sp;
-		SET_PC( GET_LE16( sp + 1 ) );
-		sp += 3;
-		goto set_psw;
+		POP( temp );
+		{
+			int addr;
+			POPADDR16( addr );
+			SET_PC( addr );
+		}
+		SET_PSW( temp );
+		goto loop;
+
 	case 0x8E: // POP PSW
 		POP( temp );
-	set_psw:
 		SET_PSW( temp );
 		goto loop;
 	}
@@ -1467,7 +1457,7 @@ stop:
 	if ( GET_PC() >= 0x10000 )
 		dprintf( "SPC: PC wrapped around\n" );
 	cpu_regs.pc = (uint16_t) GET_PC();
-	cpu_regs.sp = ( uint8_t) GET_SP();
+	cpu_regs.sp = ( uint8_t) sp;
 	cpu_regs.a  = ( uint8_t) a;
 	cpu_regs.x  = ( uint8_t) x;
 	cpu_regs.y  = ( uint8_t) y;
