@@ -150,9 +150,7 @@ void SNES_SPC::reset_common( int timer_counter_init )
 	for ( i = 0; i < timer_count; i++ )
 		REGS_IN [r_t0out + i] = timer_counter_init;
 	
-	// Run IPL ROM
-	memset( &Regs, 0, sizeof Regs );
-	Regs.pc = rom_addr;
+	smp->Reset();
 	
 	REGS [r_test   ] = 0x0A;
 	REGS [r_control] = 0xB0; // ROM enabled, clear ports
@@ -193,13 +191,7 @@ blargg_err_t SNES_SPC::load_spc( void const* data, long size )
 	if ( size < spc_min_file_size )
 		return "Corrupt SPC file";
 	
-	// CPU registers
-	Regs.pc  = spc->pch * 0x100 + spc->pcl;
-	Regs.a   = spc->a;
-	Regs.x   = spc->x;
-	Regs.y   = spc->y;
-	Regs.psw = spc->psw;
-	Regs.sp  = spc->sp;
+	smp->LoadSpc(spc);
 	
 	// RAM and registers
 	memcpy( ram, spc->ram, 0x10000 );

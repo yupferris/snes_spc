@@ -7,10 +7,7 @@
 #include "SPC_DSP.h"
 #include "SnesSmp.h"
 #include "blargg_endian.h"
-
-typedef BOOST::uint8_t uint8_t;
-typedef BOOST::uint16_t uint16_t;
-typedef int rel_time_t;
+#include "CommonTypes.h"
 
 class SNES_SPC {
 public:
@@ -98,16 +95,6 @@ private:
 	Timer timers [timer_count];
 		
 	uint8_t smp_regs [2] [reg_count];
-		
-	struct
-	{
-		uint16_t pc;
-		uint8_t a;
-		uint8_t x;
-		uint8_t y;
-		uint8_t psw;
-		uint8_t sp;
-	} Regs;
 	
 	rel_time_t  dsp_time;
 	time_t      spc_time;
