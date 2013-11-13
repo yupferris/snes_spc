@@ -371,26 +371,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 	cpu_write( data, addr, time + offset )
 
 // timers are by far the most common thing read from dp
-#define CPU_READ_TIMER( time, offset, addr_, out )\
+#define CPU_READ_TIMER( time, offset, addr, out )\
 {\
-	rel_time_t adj_time = time + offset;\
-	int dp_addr = addr_;\
-	int ti = dp_addr - (r_t0out + 0xF0);\
-	if ( (unsigned) ti < timer_count )\
-	{\
-		Timer* t = &timers [ti];\
-		if ( adj_time >= t->next_time )\
-			t = run_timer_( t, adj_time );\
-		out = t->counter;\
-		t->counter = 0;\
-	}\
-	else\
-	{\
-		out = ram [dp_addr];\
-		int i = dp_addr - 0xF0;\
-		if ( (unsigned) i < 0x10 )\
-			out = cpu_read_smp_reg( i, adj_time );\
-	}\
+	out = CPU_READ( time, offset, addr ); \
 }
 
 #define TIME_ADJ( n )   (n)
@@ -537,20 +520,6 @@ loop:
 	#ifdef SPC_CPU_OPCODE_HOOK
 		SPC_CPU_OPCODE_HOOK( GET_PC(), opcode );
 	#endif
-	/*
-	//SUB_CASE_COUNTER( 1 );
-	#define PROFILE_TIMER_LOOP( op, addr, len )\
-	if ( opcode == op )\
-	{\
-		int cond = (unsigned) ((addr) - 0xFD) < 3 &&\
-				pc [len] == 0xF0 && pc [len+1] == 0xFE - len;\
-		SUB_CASE_COUNTER( op && cond );\
-	}
-	
-	PROFILE_TIMER_LOOP( 0xEC, GET_LE16( pc + 1 ), 3 );
-	PROFILE_TIMER_LOOP( 0xEB, pc [1], 2 );
-	PROFILE_TIMER_LOOP( 0xE4, pc [1], 2 );
-	*/
 	
 	// TODO: if PC is at end of memory, this will get wrong operand (very obscure)
 	data = *++pc;
