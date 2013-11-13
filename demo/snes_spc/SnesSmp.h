@@ -49,8 +49,6 @@ private:
 
 	unsigned char cycle_table [256];
 
-	SNES_SPC *apu;
-
 	struct
 	{
 		uint16_t pc;

@@ -6,7 +6,6 @@
 SnesSmp::SnesSmp(SNES_SPC *apu)
 	: SmpBase(apu)
 {
-	this->apu = apu;
 }
 
 void SnesSmp::Reset()
@@ -1233,7 +1232,7 @@ mov_abs_temp:
 		SUSPICIOUS_OPCODE( "STOP/SLEEP" );
 		--pc;
 		rel_time = 0;
-		apu->cpu_error = "SPC emulation error";
+		throw FSL_EXCEPTION("stop/sleep was hit");
 		goto stop;
 	} // switch
 	
