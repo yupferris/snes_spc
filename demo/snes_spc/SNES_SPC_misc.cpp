@@ -31,11 +31,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 //// Init
 
-SNES_SPC::SNES_SPC()
+SNES_SPC::SNES_SPC(int smpIndex)
 {
-	smp = new
-		SnesSmp(this);
-		//SnesApu::Smp(this);
+	smp = !smpIndex ?
+		(SnesApu::SmpBase *)new SnesSmp(this) :
+		new SnesApu::Smp(this);
 		
 	dsp = new SPC_DSP( ram );
 	

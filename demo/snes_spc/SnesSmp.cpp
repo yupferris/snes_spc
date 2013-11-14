@@ -293,7 +293,6 @@ loop:
 	unsigned data;
 	
 	opcode = READ_PC();
-	invokeHook(opcode);
 	CYCLES( cycle_table [opcode] );
 	if ( targetCycles < 0 )
 		goto out_of_time;

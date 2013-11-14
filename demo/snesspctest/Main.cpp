@@ -10,6 +10,7 @@ using namespace Fel;
 #include <Windows.h>
 
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 using namespace std;
 
@@ -77,33 +78,15 @@ int Main(const List<String>& arguments)
 		if (!arguments.Count())
 			throw FSL_EXCEPTION("No input file specified");
 
-		auto apu = new SNES_SPC();
+		int testSmpIndex = 1;
+
+		auto apu = new SNES_SPC(testSmpIndex);
 		auto filter = new SPC_Filter();
 
 		auto spc = File::ReadAllBytes(arguments[0]);
 		apu->load_spc(spc.GetData(), spc.Count());
 		apu->clear_echo();
 		filter->clear();
-
-		/*Console::WriteLine("attaching hook");
-		auto smp = apu->GetSmp();
-		smp->SetHook([=] (unsigned char opcode)
-		{
-			cout << hex << setw(4) << (int)smp->GetRegPc() << " ";
-			cout << hex << setw(2) << (int)smp->GetRegA() << " ";
-			cout << hex << setw(2) << (int)smp->GetRegX() << " ";
-			cout << hex << setw(2) << (int)smp->GetRegY() << " ";
-			cout << hex << setw(2) << (int)smp->GetRegSp() << " ";
-			cout << hex << setw(4) << (int)smp->GetPsw() << " ";
-			cout << hex << setw(2) << (int)opcode << endl;
-		});
-
-		Console::WriteLine("offline render");
-		const int preBufferSize = 0x10000;
-		short preBuffer[preBufferSize * 2];
-		const int preBufferTimes = 4;
-		for (int i = 0; i < preBufferTimes; i++)
-			apu->play(preBufferSize * 2, preBuffer);*/
 
 		Console::WriteLine("render");
 		auto driver = AudioDriverFactory::CreateDefault();
@@ -115,8 +98,6 @@ int Main(const List<String>& arguments)
 
 		delete device;
 		delete driver;
-
-		Console::WriteLine("shutdown");
 
 		delete filter;
 		delete apu;

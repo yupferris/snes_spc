@@ -13,7 +13,7 @@
 class SNES_SPC : public Fel::IEmulator8
 {
 public:
-	SNES_SPC();
+	SNES_SPC(int smpIndex);
 	~SNES_SPC();
 
 	// None of these do anything, but they're necessary to implement the IEmulator8 interface. Perhaps I should
