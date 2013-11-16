@@ -41,13 +41,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Ferris\Documents\Dev\Projects\SamuraiPizzaCats\SnesApu\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Ferris\Documents\Dev\Projects\SamuraiPizzaCats\SnesApu\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\Ferris\Documents\Dev\Projects\SamuraiPizzaCats\SnesApu\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Ferris\Documents\Dev\Projects\SamuraiPizzaCats\SnesApu\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -60,7 +60,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>FslD.lib;FelD.lib;FmlD.lib;SnesApuD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FslD.lib;FelD.lib;FmlD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -78,7 +78,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Fsl.lib;Fel.lib;Fml.lib;SnesApu.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Fsl.lib;Fel.lib;Fml.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

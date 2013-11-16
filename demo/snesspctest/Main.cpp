@@ -51,7 +51,7 @@ private:
 		mutex->Lock();
 		
 		apu->play(numSamples * 2, stereoBuffer);
-		filter->run(stereoBuffer, numSamples * 2);
+		//filter->run(stereoBuffer, numSamples * 2);
 
 		for (int i = 0; i < numSamples; i++)
 		{
@@ -78,9 +78,7 @@ int Main(const List<String>& arguments)
 		if (!arguments.Count())
 			throw FSL_EXCEPTION("No input file specified");
 
-		int testSmpIndex = 1;
-
-		auto apu = new SNES_SPC(testSmpIndex);
+		auto apu = new SNES_SPC();
 		auto filter = new SPC_Filter();
 
 		auto spc = File::ReadAllBytes(arguments[0]);

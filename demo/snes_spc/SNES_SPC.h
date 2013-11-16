@@ -7,13 +7,14 @@
 #include "SPC_DSP.h"
 #include "blargg_endian.h"
 #include "CommonTypes.h"
+#include "SnesSmp.h"
 
-#include <SnesApu.h>
+#include <Fel.h>
 
 class SNES_SPC : public Fel::IEmulator8
 {
 public:
-	SNES_SPC(int smpIndex);
+	SNES_SPC();
 	~SNES_SPC();
 
 	// None of these do anything, but they're necessary to implement the IEmulator8 interface. Perhaps I should
@@ -28,8 +29,6 @@ public:
 	virtual void CpuCyclesCallback(int numCycles);
 	virtual unsigned char ReadByte(unsigned int address);
 	virtual void WriteByte(unsigned int address, unsigned char value);
-
-	SnesApu::SmpBase *GetSmp() const;
 	
 	// Sample pairs generated per second
 	enum { sample_rate = 32000 };
@@ -106,7 +105,7 @@ public:
 	enum { rom_addr = 0xFFC0 };
 	
 private:
-	SnesApu::SmpBase *smp;
+	SnesSmp *smp;
 	SPC_DSP *dsp;
 
 	Timer timers [timer_count];

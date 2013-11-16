@@ -5,7 +5,6 @@
 #include "SNES_SPC.h"
 
 #include "SnesSmp.h"
-#include <SnesApu/Smp/Smp.h>
 
 #include <string.h>
 
@@ -31,11 +30,9 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA */
 
 //// Init
 
-SNES_SPC::SNES_SPC(int smpIndex)
+SNES_SPC::SNES_SPC()
 {
-	smp = !smpIndex ?
-		(SnesApu::SmpBase *)new SnesSmp(this) :
-		new SnesApu::Smp(this);
+	smp = new SnesSmp(this);
 		
 	dsp = new SPC_DSP( ram );
 	
@@ -88,11 +85,6 @@ unsigned char SNES_SPC::ReadByte(unsigned int address)
 void SNES_SPC::WriteByte(unsigned int address, unsigned char value)
 {
 	cpu_write(value, address);
-}
-
-SnesApu::SmpBase *SNES_SPC::GetSmp() const
-{
-	return smp;
 }
 
 void SNES_SPC::init_rom( uint8_t const in [rom_size] )

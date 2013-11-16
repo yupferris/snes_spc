@@ -366,7 +366,8 @@ MISC_CLOCK( 30 )
 {
 	if ( m.every_other_sample )
 	{
-		m.kon    = m.new_kon;
+		// Test voice mask
+		m.kon    = m.new_kon;// & 0x03;
 		m.t_koff = REG(koff); 
 	}
 	
