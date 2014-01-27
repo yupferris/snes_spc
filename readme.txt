@@ -1,3 +1,5 @@
+NOTE: THIS FORK IS NO LONGER CYCLE-ACCURATE.
+
 snes_spc 0.9.0: SNES SPC-700 APU Emulator
 -----------------------------------------
 This library includes a full SPC emulator and an S-DSP emulator that can
