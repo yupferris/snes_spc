@@ -1,6 +1,8 @@
 snes_spc Change Log
 -------------------
 
+NOTE: THIS FORK IS NO LONGER CYCLE-ACCURATE. It was removed for some debugging purposes.
+
 snes_spc 0.9.0
 --------------
 - Improved documentation
